@@ -6,6 +6,7 @@ import ChessGarden from "./components/ChessGarden";
 import TechHarvest from "./components/TechHarvest";
 import CodeWorkbench from "./components/CodeWorkbench";
 import CampfireConnect from "./components/CampfireConnect";
+import MusicPlayer from "./components/MusicPlayer";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
       <TechHarvest />
       <CodeWorkbench />
       <CampfireConnect />
+      <MusicPlayer />
     </div>
   );
 }
