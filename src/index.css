@@ -1,0 +1,67 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-pixel: "Press Start 2P", cursive;
+}
+
+/* Render pixel art tajam */
+img,
+canvas,
+div {
+  image-rendering: pixelated;
+}
+
+/* Custom Pixel Cursor */
+html,
+body,
+button,
+a {
+  cursor:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path fill='%23fbbf24' stroke='%2378350f' stroke-width='1.5' d='M3 3l7 18 3-7 7-3L3 3z'/></svg>"),
+    auto !important;
+}
+
+/* Custom Pointer saat Hover Tombol / Link (Gaya Cangkul/Beliung Pixel) */
+button:hover,
+a:hover {
+  cursor:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path fill='%2334d399' stroke='%23064e3b' stroke-width='1.5' d='M10 2h4v4h-4zM8 6h8v4H8zM6 10h12v4H6zM10 14h4v8h-4z'/></svg>"),
+    pointer !important;
+}
+
+/* Custom Pixel Pattern Backgrounds */
+.bg-pixel-farm {
+  background-color: #4ade80;
+  background-image: radial-gradient(#22c55e 2px, transparent 2px);
+  background-size: 16px 16px;
+}
+
+.bg-pixel-greenhouse {
+  background-color: #064e3b;
+  background-image:
+    linear-gradient(to right, #047857 1px, transparent 1px),
+    linear-gradient(to bottom, #047857 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.bg-pixel-night {
+  background-color: #020617;
+  background-image: radial-gradient(#38bdf8 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Animasi Kustom Pixel Floating */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
