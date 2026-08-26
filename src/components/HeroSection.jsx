@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Sun, Moon, ArrowDown, Code2, Server, Palette } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowDown, Code2, Server, Palette } from "lucide-react";
 
 /* ---------- TALL PIXEL CHARACTER GRID (16x24 Portrait Developer/Wizard) ---------- */
 const FARMER_GRID = [
@@ -110,7 +110,6 @@ const EXPERTISE = [
 ];
 
 export default function HeroSection() {
-  const [isNight, setIsNight] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [reduceMotion, setReduceMotion] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -165,99 +164,51 @@ export default function HeroSection() {
     setOffset({ x, y });
   }
 
-  const skyGradient = isNight
-    ? "linear-gradient(to bottom, #0B1230 0%, #142B4A 40%, #14532D 100%)"
-    : "linear-gradient(to bottom, #7EC8E3 0%, #38BDF8 25%, #059669 70%, #065F46 100%)";
+  const skyGradient =
+    "linear-gradient(to bottom, #0B1230 0%, #142B4A 40%, #14532D 100%)";
 
   return (
     <section
       id="hero"
       onMouseMove={handleMouseMove}
       className="min-h-screen pt-16 sm:pt-20 pb-10 px-4 sm:px-6 md:px-8 relative overflow-hidden flex flex-col items-center justify-between"
-      style={{ background: skyGradient, transition: "background 0.8s ease" }}
+      style={{ background: skyGradient }}
     >
-      {/* Stars (night only) */}
-      <AnimatePresence>
-        {isNight &&
-          stars.map((s, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-[3px] h-[3px] bg-sky-100 rounded-full pointer-events-none"
-              style={{ top: `${s.top}%`, left: `${s.left}%` }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0.2, 1, 0.2] }}
-              exit={{ opacity: 0 }}
-              transition={{
-                duration: 2 + s.delay,
-                repeat: reduceMotion ? 0 : Infinity,
-                delay: s.delay,
-              }}
-            />
-          ))}
-      </AnimatePresence>
-
-      {/* Drifting clouds (day) */}
-      {!isNight && (
-        <>
-          <div className="absolute top-10 sm:top-14 left-4 sm:left-10 pointer-events-none">
-            <div className="w-12 h-6 sm:w-16 sm:h-8 bg-white/40 rounded-full blur-[1px] animate-float" />
-          </div>
-          <div
-            className="absolute top-16 sm:top-24 right-6 sm:right-16 animate-float pointer-events-none"
-            style={{ animationDelay: "1.5s" }}
-          >
-            <div className="w-16 h-8 sm:w-24 sm:h-10 bg-white/40 rounded-full blur-[1px]" />
-          </div>
-        </>
-      )}
+      {/* Stars (night) */}
+      {stars.map((s, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-[3px] h-[3px] bg-sky-100 rounded-full pointer-events-none"
+          style={{ top: `${s.top}%`, left: `${s.left}%` }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.2, 1, 0.2] }}
+          transition={{
+            duration: 2 + s.delay,
+            repeat: reduceMotion ? 0 : Infinity,
+            delay: s.delay,
+          }}
+        />
+      ))}
 
       {/* Distant mountains */}
       <Mountains
         offset={{ x: offset.x * 0.4, y: offset.y * 0.3 }}
-        tone={isNight ? "#0F2E1E" : "#065F46"}
+        tone="#0F2E1E"
       />
       <Mountains
         offset={{ x: offset.x * 0.8, y: offset.y * 0.6 }}
-        tone={isNight ? "#153826" : "#047857"}
+        tone="#153826"
       />
-
-      {/* Top Bar / Theme Toggle */}
-      <div className="w-full max-w-4xl flex items-center justify-end z-20">
-        <button
-          onClick={() => setIsNight((n) => !n)}
-          aria-label={isNight ? "Ganti ke siang" : "Ganti ke malam"}
-          title={isNight ? "Ganti ke siang" : "Ganti ke malam"}
-          className="w-9 h-9 md:w-10 md:h-10 bg-emerald-950/90 border-2 border-amber-400 rounded-lg flex items-center justify-center text-amber-300 hover:scale-105 active:scale-95 transition-transform shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)] cursor-pointer"
-        >
-          <motion.div
-            key={isNight ? "moon" : "sun"}
-            initial={{ rotate: -90, opacity: 0 }}
-            animate={{ rotate: 0, opacity: 1 }}
-            transition={{ duration: 0.4 }}
-          >
-            {isNight ? (
-              <Moon className="w-4 h-4 md:w-5 md:h-5" />
-            ) : (
-              <Sun className="w-4 h-4 md:w-5 md:h-5" />
-            )}
-          </motion.div>
-        </button>
-      </div>
 
       {/* Dialogue Main Panel */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="max-w-4xl w-full bg-emerald-950/90 border-2 md:border-4 border-emerald-800 rounded-xl p-5 sm:p-6 md:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.6)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.6)] z-20 mt-4 backdrop-blur-sm"
+        className="max-w-4xl w-full bg-emerald-950/5 rounded-xl p-5 sm:p-6 md:p-8 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.4)] z-20 mt-4 backdrop-blur-sm"
       >
-        {/*
-          flex-col-reverse: Di mobile, elemen bawah (teks) naik ke atas, 
-          dan elemen atas (avatar) turun ke paling bawah.
-          md:flex-row: Di desktop kembali sejajar (Avatar di kiri, Teks di kanan).
-        */}
         <div className="flex flex-col-reverse md:flex-row items-center gap-5 sm:gap-6 md:gap-10">
-          {/* Responsive Avatar Container (Paling bawah di Mobile) */}
+          {/* Responsive Avatar Container */}
           <motion.div
             animate={reduceMotion ? {} : { y: [0, -6, 0] }}
             transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
@@ -275,15 +226,15 @@ export default function HeroSection() {
             />
           </motion.div>
 
-          {/* Dialogue Text Content (Paling atas di Mobile) */}
+          {/* Dialogue Text Content */}
           <div className="space-y-2.5 sm:space-y-3 text-center md:text-left w-full">
             <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-emerald-900 border border-emerald-700 px-2.5 py-1 rounded text-amber-300 font-pixel text-[8px] sm:text-[9px] md:text-[10px]">
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 animate-pulse" />
-              FULL-STACK DEVELOPER & DESIGNER
+              FULL STACK DEVELOPER
             </div>
 
             <h1 className="text-lg sm:text-2xl md:text-3xl font-pixel text-amber-300 leading-snug md:leading-relaxed">
-              &gt; WELCOME, I'M RANGGA
+              &gt; WELCOME, <br /> I'M RANGGA
               <motion.span
                 animate={{ opacity: [1, 0] }}
                 transition={{
@@ -370,33 +321,29 @@ export default function HeroSection() {
           })}
         </div>
 
-        {/* Fireflies at night */}
-        <AnimatePresence>
-          {isNight &&
-            fireflies.map((f, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-1.5 h-1.5 rounded-full bg-amber-300 pointer-events-none"
-                style={{
-                  top: `${f.top}%`,
-                  left: `${f.left}%`,
-                  boxShadow: "0 0 6px 2px rgba(251,191,36,0.7)",
-                }}
-                initial={{ opacity: 0 }}
-                animate={{
-                  opacity: [0, 1, 0.4, 1, 0],
-                  x: [0, 10, -6, 8, 0],
-                  y: [0, -8, 6, -4, 0],
-                }}
-                exit={{ opacity: 0 }}
-                transition={{
-                  duration: 5 + f.delay,
-                  repeat: reduceMotion ? 0 : Infinity,
-                  delay: f.delay,
-                }}
-              />
-            ))}
-        </AnimatePresence>
+        {/* Fireflies */}
+        {fireflies.map((f, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1.5 h-1.5 rounded-full bg-amber-300 pointer-events-none"
+            style={{
+              top: `${f.top}%`,
+              left: `${f.left}%`,
+              boxShadow: "0 0 6px 2px rgba(251,191,36,0.7)",
+            }}
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: [0, 1, 0.4, 1, 0],
+              x: [0, 10, -6, 8, 0],
+              y: [0, -8, 6, -4, 0],
+            }}
+            transition={{
+              duration: 5 + f.delay,
+              repeat: reduceMotion ? 0 : Infinity,
+              delay: f.delay,
+            }}
+          />
+        ))}
       </div>
 
       {/* Scroll Down Indicator */}
