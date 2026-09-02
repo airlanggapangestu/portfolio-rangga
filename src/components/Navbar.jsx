@@ -4,7 +4,7 @@ import { Menu, X, Terminal, Leaf } from "lucide-react";
 
 const NAV_LINKS = [
   { name: "HOME", href: "#hero" },
-  { name: "ABOUT", href: "#hero" },
+  { name: "EXPERIENCE", href: "#story" },
   { name: "PROJECTS", href: "#story" },
   { name: "SKILLS", href: "#tech" },
   { name: "CONTACT", href: "#campfire" },

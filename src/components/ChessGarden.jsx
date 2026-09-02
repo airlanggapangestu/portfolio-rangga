@@ -5,13 +5,13 @@ import {
   Crown,
   CheckCircle2,
   RotateCcw,
-  Trophy,
   Lightbulb,
   Heart,
   HeartCrack,
-  Leaf,
-  Flower2,
-  Cloud,
+  X,
+  Sparkles,
+  Moon,
+  Star,
 } from "lucide-react";
 
 /* =========================================================
@@ -321,82 +321,56 @@ function createBoard(pieces) {
 }
 
 /* =========================================================
-   DEKORASI BACKGROUND
+   DEKORASI PIXEL FANTASY
 ========================================================= */
 
-function FloatingLeaves() {
-  const leaves = useMemo(
+function FloatingStars() {
+  const stars = useMemo(
     () =>
-      Array.from({ length: 5 }, () => ({
-        top: Math.random() * 100,
+      Array.from({ length: 12 }, () => ({
+        top: Math.random() * 80,
         left: Math.random() * 100,
-        delay: Math.random() * 5,
-        duration: 7 + Math.random() * 5,
-        size: 10 + Math.random() * 8,
+        delay: Math.random() * 4,
+        size: 3 + Math.random() * 5,
       })),
     [],
   );
 
   return (
     <>
-      {leaves.map((l, i) => (
+      {stars.map((s, i) => (
         <motion.div
           key={i}
-          className="absolute pointer-events-none"
-          style={{ top: `${l.top}%`, left: `${l.left}%`, zIndex: 1 }}
-          initial={{ y: -20, opacity: 0, rotate: 0 }}
-          animate={{
-            y: ["-20px", "110%"],
-            opacity: [0, 0.35, 0.35, 0],
-            rotate: [0, 360],
-            x: [0, 12, -8, 6, 0],
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            top: `${s.top}%`,
+            left: `${s.left}%`,
+            width: s.size,
+            height: s.size,
+            background: "#fbbf24",
+            boxShadow: "0 0 8px 2px rgba(251,191,36,0.4)",
+            zIndex: 1,
           }}
-          transition={{
-            duration: l.duration,
-            repeat: Infinity,
-            delay: l.delay,
-            ease: "linear",
-          }}
-        >
-          <Leaf
-            className="text-emerald-500/30"
-            style={{ width: l.size, height: l.size }}
-          />
-        </motion.div>
+          animate={{ opacity: [0.2, 0.9, 0.2] }}
+          transition={{ duration: 2 + i, repeat: Infinity, delay: s.delay }}
+        />
       ))}
     </>
   );
 }
 
-function PixelFlowers({ bottom, left, delay = 0 }) {
+function PixelSparkles({ top, left, delay = 0 }) {
   return (
     <motion.div
-      className="absolute pointer-events-none z-0 opacity-30"
-      style={{ bottom, left }}
-      animate={{ y: [0, -4, 0] }}
-      transition={{ duration: 3, repeat: Infinity, delay, ease: "easeInOut" }}
-    >
-      <Flower2 className="w-5 h-5 sm:w-6 sm:h-6 text-pink-300" />
-    </motion.div>
-  );
-}
-
-function PixelClouds({ top, left, delay = 0 }) {
-  return (
-    <motion.div
-      className="absolute pointer-events-none z-0 opacity-20"
+      className="absolute pointer-events-none z-0"
       style={{ top, left }}
-      animate={{ x: [0, 12, 0] }}
-      transition={{ duration: 8, repeat: Infinity, delay, ease: "easeInOut" }}
+      animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 0.5] }}
+      transition={{ duration: 3, repeat: Infinity, delay }}
     >
-      <Cloud className="w-10 h-8 sm:w-14 sm:h-10 text-emerald-200" />
+      <Sparkles className="w-5 h-5 text-purple-300/40" />
     </motion.div>
   );
 }
-
-/* =========================================================
-   MAIN COMPONENT
-========================================================= */
 
 export default function ChessGarden() {
   const [pieces, setPieces] = useState(() => clonePieces(PUZZLE.pieces));
@@ -409,9 +383,10 @@ export default function ChessGarden() {
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [showHint, setShowHint] = useState(false);
   const [message, setMessage] = useState(
-    "Putih jalan. Gerakkan bebas — hasil dinilai setelah langkah ke-2.",
+    "Giliran Putih — pilih bidak untuk digerakkan",
   );
   const [lastMove, setLastMove] = useState(null);
+  const [popup, setPopup] = useState(null);
 
   const board = useMemo(() => createBoard(pieces), [pieces]);
   const attemptsLeft = MAX_ATTEMPTS - failedAttempts;
@@ -431,32 +406,34 @@ export default function ChessGarden() {
     setLastMove(null);
   };
 
-  const resetPuzzleCompletely = (reason) => {
+  const resetPuzzleCompletely = () => {
     resetBoard();
     setSolved(false);
     setFailedAttempts(0);
     setShowHint(false);
-    setMessage(
-      reason ||
-        "Putih jalan. Gerakkan bebas — hasil dinilai setelah langkah ke-2.",
-    );
+    setPopup(null);
+    setMessage("Giliran Putih — pilih bidak untuk digerakkan");
   };
 
   const failAttempt = (reason) => {
     const next = failedAttempts + 1;
 
     if (next >= MAX_ATTEMPTS) {
-      resetPuzzleCompletely(
-        `${reason} Sudah ${MAX_ATTEMPTS}x percobaan — puzzle diulang total dari awal.`,
-      );
+      setPopup({
+        type: "fail",
+        text: `${reason} Sudah ${MAX_ATTEMPTS}x percobaan — puzzle diulang total.`,
+      });
+      setTimeout(() => resetPuzzleCompletely(), 2000);
       return;
     }
 
     setFailedAttempts(next);
     resetBoard();
-    setMessage(
-      `${reason} Papan direset, sisa ${MAX_ATTEMPTS - next} percobaan.`,
-    );
+    setPopup({
+      type: "fail",
+      text: `${reason} Papan direset, sisa ${MAX_ATTEMPTS - next} percobaan.`,
+    });
+    setTimeout(() => setPopup(null), 2000);
   };
 
   /* ============ BLACK AUTO-REPLY ============ */
@@ -509,7 +486,7 @@ export default function ChessGarden() {
       setLegalMoves(destinations);
       setMessage(
         destinations.length
-          ? "Pilih kotak tujuan yang ditandai — bebas pilih mana saja."
+          ? "Pilih kotak tujuan yang ditandai"
           : "Bidak ini tidak punya langkah legal.",
       );
       return;
@@ -542,7 +519,10 @@ export default function ChessGarden() {
     if (moveNumber === 1) {
       if (isCheckmate(nextPosition, "black")) {
         setSolved(true);
-        setMessage("👑 CHECKMATE! Diselesaikan dalam satu langkah!");
+        setPopup({
+          type: "win",
+          text: "CHECKMATE! Puzzle solved dalam 1 langkah!",
+        });
         return;
       }
 
@@ -557,7 +537,7 @@ export default function ChessGarden() {
 
     if (isCheckmate(nextPosition, "black")) {
       setSolved(true);
-      setMessage("👑 CHECKMATE! PUZZLE SOLVED!");
+      setPopup({ type: "win", text: "CHECKMATE! Puzzle solved!" });
     } else {
       failAttempt("⏱️ Dua langkah selesai, belum checkmate.");
     }
@@ -571,263 +551,206 @@ export default function ChessGarden() {
       className="relative py-14 sm:py-16 px-4 sm:px-6 lg:px-8 text-white overflow-hidden"
       style={{
         background:
-          "linear-gradient(180deg, #052e16 0%, #064e3b 30%, #065f46 60%, #064e3b 100%)",
+          "linear-gradient(180deg, #0f0a1e 0%, #1a0f2e 25%, #1e1b3a 50%, #1a0f2e 75%, #0f0a1e 100%)",
       }}
     >
-      {/* ===== DEKORASI BACKGROUND ===== */}
+      {/* ===== DEKORASI FANTASY ===== */}
       <div className="absolute inset-0 z-0">
-        {/* Pattern halus */}
+        {/* Pattern pixel */}
         <div
-          className="absolute inset-0 opacity-[0.04]"
+          className="absolute inset-0 opacity-[0.05]"
           style={{
-            backgroundImage: "radial-gradient(#34d399 1px, transparent 1px)",
-            backgroundSize: "20px 20px",
+            backgroundImage: "radial-gradient(#8b5cf6 1px, transparent 1px)",
+            backgroundSize: "18px 18px",
           }}
         />
 
-        {/* Clouds */}
-        <PixelClouds top="6%" left="5%" />
-        <PixelClouds top="12%" left="75%" delay={2} />
+        {/* Moon */}
+        <Moon className="absolute top-6 right-8 w-6 h-6 text-purple-300/40" />
 
-        {/* Flowers */}
-        <PixelFlowers bottom="6%" left="8%" />
-        <PixelFlowers bottom="10%" left="85%" delay={1} />
-        <PixelFlowers bottom="4%" left="50%" delay={2} />
+        {/* Sparkles */}
+        <PixelSparkles top="15%" left="10%" />
+        <PixelSparkles top="30%" left="80%" delay={1} />
+        <PixelSparkles top="50%" left="15%" delay={2} />
+        <PixelSparkles top="65%" left="85%" delay={0.5} />
 
-        {/* Floating leaves */}
-        <FloatingLeaves />
+        {/* Stars */}
+        <FloatingStars />
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto">
+      <div className="relative z-10 max-w-3xl mx-auto">
         {/* HEADER */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-5 sm:mb-6"
+          className="text-center mb-5"
         >
-          <h2 className="text-base sm:text-lg md:text-xl font-pixel text-amber-300 inline-flex items-center gap-2 sm:gap-3 bg-emerald-900/60 border border-emerald-700 rounded-lg px-4 sm:px-6 py-2.5 sm:py-3">
-            <Swords className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
-            CHAPTER 3: CHESS GARDEN
+          <h2 className="text-base sm:text-lg font-pixel text-purple-300 inline-flex items-center gap-2 bg-purple-950/60 border border-purple-700/60 rounded-lg px-4 py-2.5">
+            <Swords className="w-4 h-4 text-amber-300" />
+            CHESS GARDEN
           </h2>
         </motion.div>
 
         {/* INFO BAR */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-5 sm:mb-6"
-        >
-          <div className="bg-emerald-900/60 border border-emerald-700 rounded-lg px-3 sm:px-4 py-1.5 flex items-center gap-2">
-            <Crown className="w-3.5 h-3.5 text-amber-400" />
-            <span className="font-pixel text-[8px] sm:text-[9px] text-amber-300">
-              {PUZZLE.title}
-            </span>
-          </div>
-          <div className="bg-emerald-900/60 border border-emerald-700 rounded-lg px-3 sm:px-4 py-1.5">
-            <span className="font-pixel text-[8px] sm:text-[9px] text-emerald-300">
-              {PUZZLE.difficulty}
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 bg-emerald-900/60 border border-emerald-700 rounded-lg px-3 sm:px-4 py-1.5">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <span className="font-pixel text-[8px] text-amber-300 bg-purple-950/60 border border-purple-700/60 rounded-lg px-3 py-1.5 flex items-center gap-1.5">
+            <Crown className="w-3 h-3 text-amber-300" />
+            {PUZZLE.difficulty}
+          </span>
+          <span className="flex items-center gap-1 bg-purple-950/60 border border-purple-700/60 rounded-lg px-3 py-1.5">
             {Array.from({ length: MAX_ATTEMPTS }).map((_, i) => (
               <span key={i}>
                 {i < attemptsLeft ? (
-                  <Heart className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400 fill-amber-400/70" />
+                  <Heart className="w-3 h-3 text-pink-400 fill-pink-400/70" />
                 ) : (
-                  <HeartCrack className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-500/70" />
+                  <HeartCrack className="w-3 h-3 text-red-500/70" />
                 )}
               </span>
             ))}
-            <span className="text-[8px] sm:text-[9px] text-emerald-300/60 ml-1">
-              {attemptsLeft} percobaan
-            </span>
-          </div>
-        </motion.div>
+          </span>
+        </div>
 
-        {/* MAIN GRID */}
-        <div className="grid md:grid-cols-5 gap-4 sm:gap-5">
-          {/* ===== PAPAN CATUR (3 kolom) ===== */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="md:col-span-3 flex flex-col items-center"
-          >
-            {/* MEJA KAYU */}
-            <div className="relative w-full max-w-[400px]">
-              {/* Kaki meja */}
-              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-24 h-4 bg-amber-950 rounded-b" />
-              <div className="absolute -bottom-8 left-[20%] w-3 h-8 bg-amber-950 rounded-b" />
-              <div className="absolute -bottom-8 right-[20%] w-3 h-8 bg-amber-950 rounded-b" />
+        {/* PAPAN CATUR */}
+        <div className="flex flex-col items-center">
+          <div className="relative w-full max-w-[360px]">
+            {/* Meja fantasy */}
+            <div className="bg-purple-950 border-4 border-purple-800 rounded-xl p-2.5 shadow-[0_0_40px_-5px_rgba(139,92,246,0.3)]">
+              <div className="grid grid-cols-4 grid-rows-4 w-full aspect-square overflow-hidden rounded-md border-2 border-purple-800 relative">
+                {board.map(({ square, piece }, index) => {
+                  const row = Math.floor(index / 4);
+                  const col = index % 4;
+                  const isDark = (row + col) % 2 === 1;
+                  const isSelected = selectedSquare === square;
+                  const isLegal = legalMoves.includes(square);
+                  const isKingInCheck =
+                    piece?.type === "king" &&
+                    (piece.color === "black" ? blackInCheck : whiteInCheck);
+                  const isLastMoveSquare =
+                    lastMove &&
+                    (lastMove.from === square || lastMove.to === square);
 
-              {/* Permukaan meja */}
-              <div className="bg-amber-900 border-4 border-amber-950 rounded-xl p-2.5 sm:p-3 shadow-2xl">
-                {/* Papan */}
-                <div className="grid grid-cols-4 grid-rows-4 w-full aspect-square overflow-hidden rounded-md border-2 border-amber-950">
-                  {board.map(({ square, piece }, index) => {
-                    const row = Math.floor(index / 4);
-                    const col = index % 4;
-                    const isDark = (row + col) % 2 === 1;
-                    const isSelected = selectedSquare === square;
-                    const isLegal = legalMoves.includes(square);
-                    const isKingInCheck =
-                      piece?.type === "king" &&
-                      (piece.color === "black" ? blackInCheck : whiteInCheck);
-                    const isLastMoveSquare =
-                      lastMove &&
-                      (lastMove.from === square || lastMove.to === square);
+                  return (
+                    <button
+                      key={square}
+                      type="button"
+                      onClick={() => handleSquareClick(square)}
+                      className={`
+                        relative w-full h-full flex items-center justify-center
+                        select-none transition-colors duration-150
+                        ${isDark ? "bg-purple-800" : "bg-purple-200"}
+                        ${isSelected ? "ring-4 ring-inset ring-amber-400" : ""}
+                        hover:brightness-110
+                      `}
+                    >
+                      {isLastMoveSquare && !isSelected && (
+                        <span className="absolute inset-0 bg-amber-300/20" />
+                      )}
 
-                    return (
-                      <button
-                        key={square}
-                        type="button"
-                        onClick={() => handleSquareClick(square)}
-                        className={`
-                          relative w-full h-full flex items-center justify-center
-                          select-none transition-colors duration-150
-                          ${isDark ? "bg-amber-700" : "bg-amber-100"}
-                          ${isSelected ? "ring-4 ring-inset ring-yellow-400" : ""}
-                          hover:brightness-110
-                        `}
+                      {isKingInCheck && (
+                        <span className="absolute inset-0 bg-red-500/40 animate-pulse" />
+                      )}
+
+                      {isLegal && !piece && (
+                        <span className="absolute w-2.5 h-2.5 rounded-full bg-purple-950/60 z-20" />
+                      )}
+
+                      {isLegal && piece && (
+                        <span className="absolute inset-1 rounded-full border-4 border-amber-500/70 z-20 pointer-events-none" />
+                      )}
+
+                      {piece && <ChessPiece piece={piece} />}
+                    </button>
+                  );
+                })}
+
+                {/* POPUP OVERLAY */}
+                <AnimatePresence>
+                  {popup && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.3 }}
+                      className="absolute inset-0 z-30 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+                    >
+                      <motion.div
+                        initial={{ y: 10 }}
+                        animate={{ y: 0 }}
+                        className={`mx-3 p-4 rounded-xl border-2 text-center ${
+                          popup.type === "win"
+                            ? "bg-purple-950/95 border-amber-400"
+                            : "bg-red-950/95 border-red-400"
+                        }`}
                       >
-                        {isLastMoveSquare && !isSelected && (
-                          <span className="absolute inset-0 bg-yellow-300/20" />
+                        {popup.type === "win" ? (
+                          <>
+                            <CheckCircle2 className="w-8 h-8 text-amber-400 mx-auto mb-2" />
+                            <p className="font-pixel text-[10px] text-amber-300">
+                              CHECKMATE!
+                            </p>
+                            <p className="text-[9px] text-purple-200/70 mt-1">
+                              Puzzle berhasil diselesaikan!
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <X className="w-8 h-8 text-red-400 mx-auto mb-2" />
+                            <p className="font-pixel text-[10px] text-red-300">
+                              GAGAL!
+                            </p>
+                            <p className="text-[9px] text-red-200/70 mt-1">
+                              {popup.text}
+                            </p>
+                          </>
                         )}
-
-                        {isKingInCheck && (
-                          <span className="absolute inset-0 bg-red-500/40 animate-pulse" />
-                        )}
-
-                        {isLegal && !piece && (
-                          <span className="absolute w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-950/60 z-20" />
-                        )}
-
-                        {isLegal && piece && (
-                          <span className="absolute inset-1 rounded-full border-4 border-emerald-700/70 z-20 pointer-events-none" />
-                        )}
-
-                        {piece && <ChessPiece piece={piece} />}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* STATUS BAR */}
-            <div className="mt-6 w-full max-w-[400px]">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={message}
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`p-2.5 sm:p-3 rounded-lg border text-center text-[9px] sm:text-[10px] ${
-                    solved
-                      ? "bg-emerald-900/60 border-emerald-400 text-emerald-300"
-                      : "bg-emerald-900/60 border-amber-600 text-amber-300"
-                  }`}
-                >
-                  {solved ? (
-                    <div className="flex flex-col items-center gap-1">
-                      <CheckCircle2 className="w-5 h-5" />
-                      <strong className="text-[10px] sm:text-[11px]">
-                        CHECKMATE!
-                      </strong>
-                      <span className="text-[8px] sm:text-[9px]">
-                        Puzzle berhasil kamu selesaikan.
-                      </span>
-                    </div>
-                  ) : (
-                    message
+                      </motion.div>
+                    </motion.div>
                   )}
-                </motion.div>
-              </AnimatePresence>
+                </AnimatePresence>
+              </div>
             </div>
-          </motion.div>
+          </div>
 
-          {/* ===== SIDEBAR (2 kolom) ===== */}
-          <motion.div
-            initial={{ opacity: 0, x: 10 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="md:col-span-2 space-y-3 sm:space-y-4"
-          >
-            {/* STATUS */}
-            <div className="bg-emerald-900/50 border border-emerald-700/60 rounded-xl p-3 sm:p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-pixel text-[7px] sm:text-[8px] text-emerald-300/70">
-                  GILIRAN:
-                </span>
-                <span className="font-pixel text-[8px] sm:text-[9px] text-amber-300">
-                  {solved ? "SELESAI" : thinking ? "HITAM..." : "PUTIH"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-pixel text-[7px] sm:text-[8px] text-emerald-300/70">
-                  LANGKAH:
-                </span>
-                <span className="font-pixel text-[8px] sm:text-[9px] text-amber-300">
-                  {moveNumber}/2
-                </span>
-              </div>
-              {blackInCheck && !solved && (
-                <div className="text-center">
-                  <span className="font-pixel text-[8px] sm:text-[9px] text-red-400">
-                    CHECK!
-                  </span>
-                </div>
-              )}
-            </div>
+          {/* STATUS TEXT */}
+          <p className="text-[9px] sm:text-[10px] text-purple-300/70 font-mono mt-3 text-center">
+            {message}
+          </p>
 
-            {/* HINT */}
-            {!solved && (
-              <div className="bg-emerald-900/50 border border-emerald-700/60 rounded-xl p-3 sm:p-4">
-                <button
-                  type="button"
-                  onClick={() => setShowHint((v) => !v)}
-                  className="w-full font-pixel text-[8px] sm:text-[9px] text-emerald-300 hover:text-amber-300 transition flex items-center justify-center gap-1.5"
-                >
-                  <Lightbulb className="w-3.5 h-3.5" />
-                  {showHint ? "SEMBUNYIKAN HINT" : "LIHAT HINT"}
-                </button>
-
-                {showHint && (
-                  <p className="text-[9px] sm:text-[10px] text-emerald-200/70 mt-2 text-center">
-                    Pikirkan bagaimana Raja Putih bisa membuka jalur untuk
-                    Benteng, sambil membatasi ke mana Raja Hitam bisa lari.
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* TOMBOL RESET */}
+          {/* TOMBOL AKSI */}
+          <div className="flex items-center gap-2 mt-3">
+            <button
+              type="button"
+              onClick={() => setShowHint((v) => !v)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-purple-700 bg-purple-950/60 text-purple-300 font-pixel text-[8px] hover:text-amber-300 transition"
+            >
+              <Lightbulb className="w-3.5 h-3.5" />
+              HINT
+            </button>
             <button
               type="button"
               onClick={() => resetPuzzleCompletely()}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 border-amber-500 bg-emerald-900/60 text-amber-300 font-pixel text-[8px] sm:text-[9px] hover:bg-emerald-800 transition"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border-2 border-amber-500 bg-purple-950/60 text-amber-300 font-pixel text-[8px] hover:bg-purple-900 transition"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               {solved ? "MAIN LAGI" : "RESET"}
             </button>
+          </div>
 
-            {/* CARA MAIN */}
-            <div className="bg-emerald-900/50 border border-emerald-700/60 rounded-xl p-3 sm:p-4">
-              <div className="flex items-center gap-1.5 text-amber-300 mb-2">
-                <Trophy className="w-3.5 h-3.5" />
-                <span className="font-pixel text-[8px] sm:text-[9px]">
-                  CARA MAIN
-                </span>
-              </div>
-              <div className="text-[8px] sm:text-[9px] text-emerald-200/70 space-y-1.5">
-                <p>1. Klik bidak Putih</p>
-                <p>2. Klik kotak tujuan</p>
-                <p>3. Hitam membalas otomatis</p>
-                <p>4. Langkah ke-2 harus checkmate</p>
-              </div>
-            </div>
-          </motion.div>
+          {/* HINT TEXT */}
+          <AnimatePresence>
+            {showHint && !solved && (
+              <motion.p
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 5 }}
+                className="text-[9px] text-purple-200/70 mt-2 text-center max-w-sm"
+              >
+                Pikirkan bagaimana Raja Putih bisa membuka jalur untuk Benteng,
+                sambil membatasi ke mana Raja Hitam bisa lari.
+              </motion.p>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </section>
@@ -835,7 +758,7 @@ export default function ChessGarden() {
 }
 
 /* =========================================================
-   CHESS PIECE — carved-marble styled glyph
+   CHESS PIECE — fantasy styled glyph
 ========================================================= */
 
 function ChessPiece({ piece }) {
@@ -846,21 +769,21 @@ function ChessPiece({ piece }) {
       <span
         className={`absolute inset-0 rounded-full ${
           isWhite
-            ? "bg-gradient-to-b from-stone-50 to-stone-300"
-            : "bg-gradient-to-b from-stone-700 to-stone-950"
+            ? "bg-gradient-to-b from-white to-gray-300"
+            : "bg-gradient-to-b from-purple-900 to-black"
         }`}
         style={{
           boxShadow: isWhite
-            ? "inset 0 -3px 5px rgba(120,90,40,0.35), inset 0 2px 3px rgba(255,255,255,0.9), 0 3px 4px rgba(0,0,0,0.35)"
-            : "inset 0 -3px 5px rgba(0,0,0,0.6), inset 0 2px 3px rgba(255,255,255,0.12), 0 3px 4px rgba(0,0,0,0.55)",
+            ? "inset 0 -3px 5px rgba(0,0,0,0.3), inset 0 2px 3px rgba(255,255,255,0.9), 0 3px 4px rgba(0,0,0,0.35)"
+            : "inset 0 -3px 5px rgba(0,0,0,0.7), inset 0 2px 3px rgba(255,255,255,0.15), 0 3px 4px rgba(0,0,0,0.55)",
         }}
       />
       <span
-        className={`relative leading-none select-none text-[clamp(30px,8vw,52px)] ${
-          isWhite ? "text-amber-50" : "text-stone-950"
+        className={`relative leading-none select-none text-[clamp(28px,7vw,48px)] ${
+          isWhite ? "text-white" : "text-purple-950"
         }`}
         style={{
-          WebkitTextStroke: isWhite ? "1.5px #78716c" : "1.5px #fbbf24",
+          WebkitTextStroke: isWhite ? "1.5px #6b7280" : "1.5px #a78bfa",
           filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.45))",
         }}
       >

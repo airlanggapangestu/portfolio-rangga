@@ -1,356 +1,1605 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { motion } from "framer-motion";
-import { ArrowDown, Code2, Server, Palette } from "lucide-react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
-/* ---------- TALL PIXEL CHARACTER GRID (16x24 Portrait Developer/Wizard) ---------- */
-const FARMER_GRID = [
-  ".....HHHHHH.....",
-  "....HHHHHHHH....",
-  "....HHHHHHHH....",
-  "....CCCCCCCC....",
-  "....SSSSSSSS....",
-  "....SEESSEES....",
-  "....SSSSSSSS....",
-  "....SSSMSSSS....",
-  "...JJJJJJJJJJ...",
-  "..JJJJTTTTJJJJ..",
-  "..JJJJTTTTJJJJ..",
-  "..JJJJTTTTJJJJ..",
-  "..JJJJAAAAJJJJ..",
-  "..JJJJTTTTJJJJ..",
-  "..JJJJTTTTJJJJ..",
-  "...PPPPPPPPPP...",
-  "...PPPPPPPPPP...",
-  "...PPPPPPPPPP...",
-  "...PPPPPPPPPP...",
-  "...LL......LL...",
-  "...LL......LL...",
-  "..LLLL....LLLL..",
-  "..LLLL....LLLL..",
-  ".LLLLLL..LLLLLL.",
-];
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 
-const PIXEL_COLORS = {
-  H: "#312E81", // Hair / Hood
-  C: "#F59E0B", // Headband / Headphones
-  S: "#FDE047", // Skin tone
-  E: "#0F172A", // Eyes
-  M: "#EF4444", // Mouth
-  J: "#0284C7", // Jacket
-  T: "#10B981", // Inner Shirt
-  A: "#F59E0B", // Emblem
-  P: "#1E293B", // Cargo Pants
-  L: "#475569", // Boots
-};
+import { ArrowDown, ArrowRight, Sparkles } from "lucide-react";
 
-function buildPixelShadow(grid, colors, size) {
-  const shadows = [];
-  grid.forEach((row, y) => {
-    row.split("").forEach((ch, x) => {
-      if (ch === "." || !colors[ch]) return;
-      shadows.push(`${x * size}px ${y * size}px 0 ${colors[ch]}`);
-    });
-  });
-  return shadows.join(", ");
-}
+/* =========================================================
+   PIXEL SKY PORTFOLIO — RESPONSIVE HERO
+   ========================================================= */
 
-/* ---------- Distant pixel mountains ---------- */
-function Mountains({ offset, tone }) {
+/* =========================================================
+   PIXEL CLOUD
+   ========================================================= */
+
+function PixelCloud({
+  className = "",
+  scale = 1,
+  opacity = 0.8,
+  duration = 12,
+  delay = 0,
+}) {
+  const cloudGrid = [
+    "......WW......",
+    "...WWWWWW.....",
+    "..WWWWWWWW....",
+    ".WWWWWWWWWW...",
+    "WWWWWWWWWWWW..",
+    "WWWWWWWWWWWW..",
+    ".WWWWWWWWWW...",
+  ];
+
+  const shadow = useMemo(() => {
+    const size = 5 * scale;
+
+    return cloudGrid
+      .flatMap((row, y) =>
+        row.split("").flatMap((cell, x) => {
+          if (cell !== "W") return [];
+
+          return [`${x * size}px ${y * size}px 0 rgba(255,255,255,${opacity})`];
+        }),
+      )
+      .join(",");
+  }, [scale, opacity]);
+
   return (
-    <svg
-      viewBox="0 0 400 80"
-      preserveAspectRatio="none"
-      className="absolute bottom-0 left-0 w-full h-20 sm:h-24 md:h-32 pointer-events-none"
-      style={{
-        transform: `translate(${offset.x}px, ${offset.y}px)`,
-        transition: "transform 0.2s ease-out",
+    <motion.div
+      className={`absolute pointer-events-none ${className}`}
+      animate={{
+        x: [0, 20, 0],
+      }}
+      transition={{
+        duration,
+        delay,
+        repeat: Infinity,
+        ease: "easeInOut",
       }}
     >
-      <polygon
-        points="0,80 0,45 40,15 80,50 120,25 160,55 200,10 240,48 280,20 320,52 360,30 400,60 400,80"
-        fill={tone}
-        shapeRendering="crispEdges"
+      <div
+        style={{
+          width: 5 * scale,
+          height: 5 * scale,
+          boxShadow: shadow,
+        }}
       />
-    </svg>
+    </motion.div>
   );
 }
 
-/* Data Core Expertise */
-const EXPERTISE = [
-  {
-    id: "frontend",
-    title: "FRONTEND DEV",
-    subtitle: "Web UI & Interactive",
-    description:
-      "Membangun antarmuka web yang cepat, responsif, dan kaya animasi interaktif.",
-    icon: Code2,
-    hex: "#34D399",
-    tag: "React / Vite / Tailwind",
-  },
-  {
-    id: "backend",
-    title: "BACKEND DEV",
-    subtitle: "Logic & API Architecture",
-    description:
-      "Mengembangkan arsitektur server, REST API, dan manajemen database yang andal.",
-    icon: Server,
-    hex: "#FBBF24",
-    tag: "Node.js / Express / DB",
-  },
-  {
-    id: "design",
-    title: "UI/UX & PIXEL ART",
-    subtitle: "Visual & Asset Creation",
-    description:
-      "Merancang tata letak UI, ikon pixel art, serta pengalaman pengguna yang estetis.",
-    icon: Palette,
-    hex: "#38BDF8",
-    tag: "Figma / Pixel Assets",
-  },
-];
+/* =========================================================
+   PIXEL SUN
+   ========================================================= */
 
-export default function HeroSection() {
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [reduceMotion, setReduceMotion] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+function PixelSun() {
+  return (
+    <motion.div
+      className="
+        absolute
+        top-[7%]
+        right-[6%]
+        sm:top-[8%]
+        sm:right-[9%]
+        lg:right-[13%]
+        pointer-events-none
+        z-[1]
+      "
+      animate={{
+        scale: [1, 1.02, 1],
+      }}
+      transition={{
+        duration: 5,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+    >
+      <div
+        className="
+          relative
+          w-14
+          h-14
+          sm:w-20
+          sm:h-20
+          md:w-24
+          md:h-24
+          lg:w-28
+          lg:h-28
+        "
+      >
+        {/* Rays */}
 
-  useEffect(() => {
-    const mqMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduceMotion(mqMotion.matches);
-    const listenerMotion = (e) => setReduceMotion(e.matches);
-    mqMotion.addEventListener("change", listenerMotion);
+        <span
+          className="
+            absolute
+            -top-3
+            left-1/2
+            -translate-x-1/2
+            w-1.5
+            h-4
+            sm:w-2
+            sm:h-5
+            bg-yellow-200/70
+          "
+        />
 
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
+        <span
+          className="
+            absolute
+            -bottom-3
+            left-1/2
+            -translate-x-1/2
+            w-1.5
+            h-4
+            sm:w-2
+            sm:h-5
+            bg-yellow-200/70
+          "
+        />
 
-    return () => {
-      mqMotion.removeEventListener("change", listenerMotion);
-      window.removeEventListener("resize", checkMobile);
-    };
-  }, []);
+        <span
+          className="
+            absolute
+            -left-3
+            top-1/2
+            -translate-y-1/2
+            w-4
+            h-1.5
+            sm:w-5
+            sm:h-2
+            bg-yellow-200/70
+          "
+        />
 
-  const pixelSize = isMobile ? 6 : 9;
-  const farmerShadow = useMemo(
-    () => buildPixelShadow(FARMER_GRID, PIXEL_COLORS, pixelSize),
-    [pixelSize],
+        <span
+          className="
+            absolute
+            -right-3
+            top-1/2
+            -translate-y-1/2
+            w-4
+            h-1.5
+            sm:w-5
+            sm:h-2
+            bg-yellow-200/70
+          "
+        />
+
+        {/* Glow */}
+
+        <div
+          className="
+            absolute
+            inset-0
+            bg-yellow-300/90
+            shadow-[0_0_35px_rgba(253,224,71,0.5)]
+            sm:shadow-[0_0_45px_rgba(253,224,71,0.5)]
+          "
+        />
+
+        {/* Main */}
+
+        <div
+          className="
+            absolute
+            inset-2
+            sm:inset-3
+            bg-yellow-200
+          "
+        />
+
+        {/* Pixel details */}
+
+        <div
+          className="
+            absolute
+            top-4
+            left-4
+            sm:top-5
+            sm:left-5
+            w-1.5
+            h-1.5
+            sm:w-2
+            sm:h-2
+            bg-yellow-500/30
+          "
+        />
+
+        <div
+          className="
+            absolute
+            bottom-4
+            right-4
+            sm:bottom-5
+            sm:right-6
+            w-2
+            h-1.5
+            sm:w-3
+            sm:h-2
+            bg-yellow-500/20
+          "
+        />
+      </div>
+    </motion.div>
   );
+}
 
-  const stars = useMemo(
+/* =========================================================
+   PIXEL BIRD
+   ========================================================= */
+
+function PixelBird({ top, delay = 0, scale = 1, duration = 22 }) {
+  return (
+    <motion.div
+      className="absolute pointer-events-none z-[4]"
+      style={{
+        top: `${top}%`,
+      }}
+      initial={{
+        x: "-10vw",
+      }}
+      animate={{
+        x: "110vw",
+      }}
+      transition={{
+        duration,
+        delay,
+        repeat: Infinity,
+        ease: "linear",
+      }}
+    >
+      <div
+        className="relative"
+        style={{
+          width: `${20 * scale}px`,
+          height: `${10 * scale}px`,
+        }}
+      >
+        {/* Left Wing */}
+
+        <motion.div
+          className="absolute left-0 top-1"
+          animate={{
+            rotate: [0, -25, 0],
+          }}
+          transition={{
+            duration: 0.45,
+            repeat: Infinity,
+          }}
+          style={{
+            width: 10 * scale,
+            height: 4 * scale,
+            background: "#334155",
+            clipPath: "polygon(100% 50%, 0 0, 0 100%)",
+          }}
+        />
+
+        {/* Right Wing */}
+
+        <motion.div
+          className="absolute right-0 top-1"
+          animate={{
+            rotate: [0, 25, 0],
+          }}
+          transition={{
+            duration: 0.45,
+            repeat: Infinity,
+          }}
+          style={{
+            width: 10 * scale,
+            height: 4 * scale,
+            background: "#334155",
+            clipPath: "polygon(0 50%, 100% 0, 100% 100%)",
+          }}
+        />
+      </div>
+    </motion.div>
+  );
+}
+
+/* =========================================================
+   PIXEL PLANE
+   ========================================================= */
+
+function PixelPlane() {
+  return (
+    <motion.div
+      className="
+        absolute
+        top-[30%]
+        left-[-120px]
+        pointer-events-none
+        z-[4]
+        hidden
+        sm:block
+      "
+      animate={{
+        x: ["0vw", "125vw"],
+        y: [0, -10, 0, 8, 0],
+      }}
+      transition={{
+        duration: 38,
+        repeat: Infinity,
+        ease: "linear",
+      }}
+    >
+      <div className="relative scale-75 md:scale-100">
+        {/* Body */}
+
+        <div className="w-16 h-2 bg-slate-700/50" />
+
+        {/* Wing */}
+
+        <div
+          className="
+            absolute
+            left-5
+            -top-3
+            w-7
+            h-4
+            bg-slate-700/50
+          "
+          style={{
+            clipPath: "polygon(0 100%, 100% 0, 100% 100%)",
+          }}
+        />
+
+        {/* Tail */}
+
+        <div
+          className="
+            absolute
+            right-0
+            -top-2
+            w-4
+            h-3
+            bg-slate-700/50
+          "
+          style={{
+            clipPath: "polygon(0 100%, 100% 0, 100% 100%)",
+          }}
+        />
+
+        {/* Contrail */}
+
+        <div
+          className="
+            absolute
+            -bottom-3
+            left-2
+            w-24
+            h-1
+            bg-white/20
+            blur-sm
+          "
+        />
+      </div>
+    </motion.div>
+  );
+}
+
+/* =========================================================
+   PIXEL KITE
+   ========================================================= */
+
+function PixelKite() {
+  return (
+    <motion.div
+      className="
+        absolute
+        top-[18%]
+        left-[5%]
+        sm:left-[9%]
+        pointer-events-none
+        z-[3]
+        hidden
+        md:block
+      "
+      animate={{
+        y: [0, -14, 0],
+        rotate: [-3, 3, -3],
+      }}
+      transition={{
+        duration: 5,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+    >
+      <div className="relative">
+        {/* Kite */}
+
+        <div
+          className="
+            w-8
+            h-8
+            lg:w-10
+            lg:h-10
+            bg-rose-400
+            rotate-45
+            border-4
+            border-rose-200
+          "
+        />
+
+        {/* String */}
+
+        <div
+          className="
+            absolute
+            left-1/2
+            top-7
+            lg:top-8
+            w-px
+            h-24
+            lg:h-28
+            bg-slate-500/35
+          "
+        />
+
+        {/* Tail */}
+
+        <div
+          className="
+            absolute
+            left-[2px]
+            top-[37px]
+            lg:top-[43px]
+            flex
+            flex-col
+            gap-2
+          "
+        >
+          <span className="w-2 h-2 bg-yellow-300" />
+          <span className="w-2 h-2 bg-sky-300 ml-3" />
+          <span className="w-2 h-2 bg-pink-300 ml-1" />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* =========================================================
+   SMALL CLOUD
+   ========================================================= */
+
+function SmallCloud({ className = "", delay = 0 }) {
+  return (
+    <motion.div
+      className={`absolute pointer-events-none ${className}`}
+      animate={{
+        x: [0, 12, 0],
+      }}
+      transition={{
+        duration: 10,
+        delay,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+    >
+      <div className="relative scale-75 sm:scale-100">
+        <div
+          className="
+            absolute
+            left-4
+            top-2
+            w-16
+            h-5
+            bg-white/35
+          "
+        />
+
+        <div
+          className="
+            absolute
+            left-0
+            top-4
+            w-24
+            h-5
+            bg-white/35
+          "
+        />
+
+        <div
+          className="
+            absolute
+            left-8
+            top-0
+            w-9
+            h-7
+            bg-white/35
+          "
+        />
+      </div>
+    </motion.div>
+  );
+}
+
+/* =========================================================
+   SKY PARTICLES
+   ========================================================= */
+
+function SkyParticles({ count = 20 }) {
+  const particles = useMemo(
     () =>
-      Array.from({ length: 24 }, () => ({
-        top: Math.random() * 55,
+      Array.from({
+        length: count,
+      }).map((_, index) => ({
+        id: index,
+        top: Math.random() * 70,
         left: Math.random() * 100,
+        size: Math.random() > 0.8 ? 3 : 2,
         delay: Math.random() * 3,
       })),
-    [],
+    [count],
   );
-
-  const fireflies = useMemo(
-    () =>
-      Array.from({ length: 6 }, () => ({
-        top: 55 + Math.random() * 30,
-        left: Math.random() * 100,
-        delay: Math.random() * 2,
-      })),
-    [],
-  );
-
-  function handleMouseMove(e) {
-    if (reduceMotion || isMobile) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 24;
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 10;
-    setOffset({ x, y });
-  }
-
-  const skyGradient =
-    "linear-gradient(to bottom, #0B1230 0%, #142B4A 40%, #14532D 100%)";
 
   return (
-    <section
-      id="hero"
-      onMouseMove={handleMouseMove}
-      className="min-h-screen pt-16 sm:pt-20 pb-10 px-4 sm:px-6 md:px-8 relative overflow-hidden flex flex-col items-center justify-between"
-      style={{ background: skyGradient }}
-    >
-      {/* Stars (night) */}
-      {stars.map((s, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-[3px] h-[3px] bg-sky-100 rounded-full pointer-events-none"
-          style={{ top: `${s.top}%`, left: `${s.left}%` }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0.2, 1, 0.2] }}
+    <>
+      {particles.map((particle) => (
+        <motion.span
+          key={particle.id}
+          className="
+            absolute
+            bg-white/40
+            pointer-events-none
+          "
+          style={{
+            top: `${particle.top}%`,
+            left: `${particle.left}%`,
+            width: particle.size,
+            height: particle.size,
+          }}
+          animate={{
+            opacity: [0.1, 0.65, 0.1],
+          }}
           transition={{
-            duration: 2 + s.delay,
-            repeat: reduceMotion ? 0 : Infinity,
-            delay: s.delay,
+            duration: 3,
+            delay: particle.delay,
+            repeat: Infinity,
+            ease: "easeInOut",
           }}
         />
       ))}
+    </>
+  );
+}
 
-      {/* Distant mountains */}
-      <Mountains
-        offset={{ x: offset.x * 0.4, y: offset.y * 0.3 }}
-        tone="#0F2E1E"
-      />
-      <Mountains
-        offset={{ x: offset.x * 0.8, y: offset.y * 0.6 }}
-        tone="#153826"
+/* =========================================================
+   PIXEL TERMINAL
+   ========================================================= */
+
+function PixelTerminal({ reduceMotion }) {
+  return (
+    <motion.div
+      initial={{
+        opacity: 0,
+        scale: 0.85,
+        y: 25,
+      }}
+      animate={{
+        opacity: 1,
+        scale: 1,
+        y: 0,
+      }}
+      transition={{
+        duration: 0.8,
+        delay: 0.4,
+      }}
+      className="
+        relative
+        w-[220px]
+        h-[220px]
+        sm:w-[240px]
+        sm:h-[240px]
+        lg:w-[280px]
+        lg:h-[280px]
+        shrink-0
+      "
+    >
+      {/* Glow */}
+
+      <div
+        className="
+          absolute
+          inset-8
+          rounded-full
+          bg-white/20
+          blur-3xl
+        "
       />
 
-      {/* Dialogue Main Panel */}
+      {/* Pixel frame */}
+
+      <div
+        className="
+          absolute
+          inset-7
+          sm:inset-8
+          border-2
+          border-white/20
+        "
+      />
+
+      {/* Terminal */}
+
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="max-w-4xl w-full bg-emerald-950/5 rounded-xl p-5 sm:p-6 md:p-8 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.4)] z-20 mt-4 backdrop-blur-sm"
+        animate={
+          reduceMotion
+            ? {}
+            : {
+                y: [0, -8, 0],
+              }
+        }
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="
+          absolute
+          left-1/2
+          top-1/2
+          -translate-x-1/2
+          -translate-y-1/2
+          w-[155px]
+          h-[110px]
+          sm:w-[175px]
+          sm:h-[120px]
+          lg:w-[190px]
+          lg:h-[130px]
+          bg-slate-900/85
+          border-4
+          border-slate-700
+          shadow-[7px_7px_0_rgba(15,23,42,0.2)]
+        "
       >
-        <div className="flex flex-col-reverse md:flex-row items-center gap-5 sm:gap-6 md:gap-10">
-          {/* Responsive Avatar Container */}
-          <motion.div
-            animate={reduceMotion ? {} : { y: [0, -6, 0] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-            className="w-[96px] h-[144px] md:w-[144px] md:h-[216px] flex items-center justify-center flex-shrink-0 relative pointer-events-none mt-2 md:mt-0"
-          >
-            <div
-              style={{
-                width: pixelSize,
-                height: pixelSize,
-                boxShadow: farmerShadow,
-                transform: isMobile
-                  ? "translate(-45px, -69px)"
-                  : "translate(-68px, -103px)",
-              }}
-            />
-          </motion.div>
+        {/* Header */}
 
-          {/* Dialogue Text Content */}
-          <div className="space-y-2.5 sm:space-y-3 text-center md:text-left w-full">
-            <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-emerald-900 border border-emerald-700 px-2.5 py-1 rounded text-amber-300 font-pixel text-[8px] sm:text-[9px] md:text-[10px]">
-              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 animate-pulse" />
-              FULL STACK DEVELOPER
+        <div
+          className="
+            flex
+            items-center
+            gap-1.5
+            px-3
+            py-2
+            border-b
+            border-white/10
+          "
+        >
+          <span className="w-2 h-2 bg-red-400" />
+
+          <span className="w-2 h-2 bg-yellow-400" />
+
+          <span className="w-2 h-2 bg-green-400" />
+        </div>
+
+        {/* Terminal text */}
+
+        <div
+          className="
+            px-3
+            sm:px-4
+            py-2
+            sm:py-3
+            font-mono
+            text-[7px]
+            sm:text-[8px]
+            leading-5
+            text-emerald-300
+          "
+        >
+          <div>&gt; hello_world()</div>
+
+          <div className="text-sky-300">building...</div>
+
+          <div className="text-yellow-300">✓ ready_</div>
+        </div>
+      </motion.div>
+
+      {/* Floating pixels */}
+
+      <motion.div
+        animate={{
+          y: [0, -15, 0],
+          rotate: [0, 90, 180],
+        }}
+        transition={{
+          duration: 5,
+          repeat: Infinity,
+        }}
+        className="
+          absolute
+          top-2
+          right-5
+          sm:top-4
+          sm:right-7
+          w-3
+          h-3
+          sm:w-4
+          sm:h-4
+          bg-yellow-300
+        "
+      />
+
+      <motion.div
+        animate={{
+          y: [0, 12, 0],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+        }}
+        className="
+          absolute
+          bottom-7
+          left-5
+          sm:bottom-9
+          sm:left-8
+          w-2.5
+          h-2.5
+          sm:w-3
+          sm:h-3
+          bg-pink-300
+        "
+      />
+
+      <motion.div
+        animate={{
+          x: [0, 8, 0],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+        }}
+        className="
+          absolute
+          top-16
+          left-0
+          sm:top-20
+          w-2
+          h-2
+          bg-white
+        "
+      />
+    </motion.div>
+  );
+}
+
+/* =========================================================
+   MAIN HERO
+   ========================================================= */
+
+export default function HeroSection() {
+  const sectionRef = useRef(null);
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  const [isTablet, setIsTablet] = useState(false);
+
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  /* =======================================================
+     SCROLL
+     ======================================================= */
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+
+  const skyY = useTransform(scrollYProgress, [0, 1], [0, 100]);
+
+  const cloudY = useTransform(scrollYProgress, [0, 1], [0, 180]);
+
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, -100]);
+
+  const smoothContentY = useSpring(contentY, {
+    stiffness: 80,
+    damping: 20,
+  });
+
+  /* =======================================================
+     RESPONSIVE
+     ======================================================= */
+
+  useEffect(() => {
+    const updateScreen = () => {
+      setIsMobile(window.innerWidth < 640);
+
+      setIsTablet(window.innerWidth >= 640 && window.innerWidth < 1024);
+    };
+
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const updateMotion = () => {
+      setReduceMotion(motionQuery.matches);
+    };
+
+    updateScreen();
+    updateMotion();
+
+    window.addEventListener("resize", updateScreen);
+
+    motionQuery.addEventListener("change", updateMotion);
+
+    return () => {
+      window.removeEventListener("resize", updateScreen);
+
+      motionQuery.removeEventListener("change", updateMotion);
+    };
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      id="hero"
+      className="
+        relative
+        min-h-[100svh]
+        w-full
+        overflow-hidden
+        flex
+        items-center
+        justify-center
+      "
+      style={{
+        background: `
+          linear-gradient(
+            180deg,
+            #3b82c4 0%,
+            #60a5dc 25%,
+            #8bc7e8 50%,
+            #b8dced 72%,
+            #d7eadf 100%
+          )
+        `,
+      }}
+    >
+      {/* ===================================================
+          ATMOSPHERE
+          =================================================== */}
+
+      <motion.div
+        className="
+          absolute
+          inset-0
+          pointer-events-none
+        "
+        style={{
+          y: skyY,
+        }}
+      >
+        {/* Soft sky glow */}
+
+        <div
+          className="
+            absolute
+            inset-0
+            bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,0.18),transparent_38%)]
+          "
+        />
+
+        {/* Particles */}
+
+        {!isMobile && !reduceMotion && <SkyParticles count={28} />}
+      </motion.div>
+
+      {/* ===================================================
+          SUN
+          =================================================== */}
+
+      <PixelSun />
+
+      {/* ===================================================
+          FAR CLOUDS
+          =================================================== */}
+
+      <motion.div
+        className="
+          absolute
+          inset-0
+          pointer-events-none
+        "
+        style={{
+          y: cloudY,
+        }}
+      >
+        <PixelCloud
+          className="
+            top-[9%]
+            left-[-5%]
+            sm:left-[2%]
+          "
+          scale={isMobile ? 0.8 : 1.3}
+          opacity={0.28}
+          duration={18}
+        />
+
+        <PixelCloud
+          className="
+            top-[14%]
+            left-[42%]
+          "
+          scale={isMobile ? 0.7 : 1}
+          opacity={0.25}
+          duration={20}
+          delay={2}
+        />
+
+        <PixelCloud
+          className="
+            top-[7%]
+            right-[-5%]
+            sm:right-[5%]
+          "
+          scale={isMobile ? 0.9 : 1.6}
+          opacity={0.3}
+          duration={22}
+        />
+
+        <PixelCloud
+          className="
+            top-[45%]
+            left-[-8%]
+          "
+          scale={isMobile ? 1 : 1.8}
+          opacity={0.3}
+          duration={24}
+        />
+
+        <PixelCloud
+          className="
+            top-[48%]
+            right-[-7%]
+          "
+          scale={isMobile ? 0.9 : 1.4}
+          opacity={0.28}
+          duration={19}
+        />
+      </motion.div>
+
+      {/* ===================================================
+          SMALL CLOUDS
+          =================================================== */}
+
+      <SmallCloud
+        className="
+          top-[28%]
+          left-[12%]
+          sm:left-[18%]
+        "
+        delay={1}
+      />
+
+      <SmallCloud
+        className="
+          top-[35%]
+          right-[8%]
+          sm:right-[15%]
+        "
+        delay={3}
+      />
+
+      {/* ===================================================
+          BIRDS
+          =================================================== */}
+
+      {!reduceMotion && (
+        <>
+          <PixelBird top={12} scale={isMobile ? 0.8 : 1.2} duration={24} />
+
+          <PixelBird
+            top={20}
+            scale={isMobile ? 0.65 : 0.8}
+            duration={29}
+            delay={8}
+          />
+
+          {!isMobile && (
+            <PixelBird top={8} scale={0.7} duration={32} delay={15} />
+          )}
+        </>
+      )}
+
+      {/* ===================================================
+          PLANE
+          =================================================== */}
+
+      {!reduceMotion && <PixelPlane />}
+
+      {/* ===================================================
+          KITE
+          =================================================== */}
+
+      {!reduceMotion && <PixelKite />}
+
+      {/* ===================================================
+          MAIN CONTENT
+          =================================================== */}
+
+      <motion.div
+        className="
+          relative
+          z-20
+          w-full
+          min-h-[100svh]
+          flex
+          items-center
+          justify-center
+          px-4
+          py-24
+          sm:px-6
+          sm:py-24
+          lg:px-8
+          lg:py-20
+        "
+      >
+        <div
+          className="
+            w-full
+            max-w-[1200px]
+            mx-auto
+          "
+        >
+          <div
+            className="
+              flex
+              flex-col
+              lg:grid
+              lg:grid-cols-[minmax(0,1fr)_auto]
+              items-center
+              lg:items-center
+              gap-8
+              sm:gap-10
+              lg:gap-16
+              xl:gap-24
+          "
+          >
+            {/* =================================================
+                TEXT CONTENT
+                ================================================= */}
+
+            <div
+              className="
+                w-full
+                min-w-0
+                text-center
+                lg:text-left
+              "
+            >
+              {/* Status */}
+
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  y: 15,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  duration: 0.6,
+                }}
+                className="
+                  inline-flex
+                  items-center
+                  gap-2
+                  mb-4
+                  sm:mb-5
+                "
+              >
+                <span className="relative flex h-2.5 w-2.5">
+                  <span
+                    className="
+                      absolute
+                      inline-flex
+                      h-full
+                      w-full
+                      animate-ping
+                      bg-emerald-300
+                      opacity-60
+                    "
+                  />
+
+                  <span
+                    className="
+                      relative
+                      inline-flex
+                      h-2.5
+                      w-2.5
+                      bg-emerald-400
+                    "
+                  />
+                </span>
+
+                <span
+                  className="
+                    font-mono
+                    text-[8px]
+                    min-[375px]:text-[9px]
+                    sm:text-[10px]
+                    tracking-[0.15em]
+                    sm:tracking-[0.2em]
+                    text-white/80
+                  "
+                >
+                  AVAILABLE FOR PROJECTS
+                </span>
+              </motion.div>
+
+              {/* Hello */}
+
+              <motion.p
+                initial={{
+                  opacity: 0,
+                  y: 15,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  duration: 0.6,
+                  delay: 0.1,
+                }}
+                className="
+                  font-mono
+                  text-[9px]
+                  sm:text-[10px]
+                  md:text-xs
+                  text-sky-950/60
+                  mb-1.5
+                  sm:mb-2
+                  tracking-[0.2em]
+                "
+              >
+                HELLO, I'M
+              </motion.p>
+
+              {/* =================================================
+                  NAME
+                  ================================================= */}
+
+              <motion.h1
+                initial={{
+                  opacity: 0,
+                  y: 25,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  duration: 0.7,
+                  delay: 0.15,
+                }}
+                className="
+                  font-pixel
+                  text-[clamp(2.5rem,14vw,4rem)]
+                  min-[375px]:text-[clamp(2.8rem,14vw,4.5rem)]
+                  sm:text-6xl
+                  md:text-7xl
+                  lg:text-8xl
+                  xl:text-9xl
+                  tracking-wide
+                  leading-none
+                  text-white
+                  drop-shadow-[0_5px_0_rgba(30,64,175,0.35)]
+                  sm:drop-shadow-[0_7px_0_rgba(30,64,175,0.35)]
+                  break-words
+                "
+              >
+                RANGGA
+                <motion.span
+                  animate={
+                    reduceMotion
+                      ? {}
+                      : {
+                          opacity: [1, 0, 1],
+                        }
+                  }
+                  transition={{
+                    duration: 1,
+                    repeat: Infinity,
+                  }}
+                  className="
+                    text-yellow-300
+                  "
+                >
+                  _
+                </motion.span>
+              </motion.h1>
+
+              {/* =================================================
+                  ROLE
+                  ================================================= */}
+
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  y: 20,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  duration: 0.6,
+                  delay: 0.3,
+                }}
+                className="
+                  mt-4
+                  sm:mt-5
+                  flex
+                  flex-wrap
+                  justify-center
+                  lg:justify-start
+                  items-center
+                  gap-2
+                  sm:gap-3
+                "
+              >
+                <span
+                  className="
+                    font-pixel
+                    text-[11px]
+                    min-[375px]:text-xs
+                    sm:text-base
+                    md:text-lg
+                    lg:text-xl
+                    text-sky-950
+                  "
+                >
+                  FULL STACK DEVELOPER
+                </span>
+
+                <span
+                  className="
+                    hidden
+                    sm:block
+                    w-8
+                    h-px
+                    bg-sky-950/30
+                  "
+                />
+
+                <span
+                  className="
+                    font-mono
+                    text-[8px]
+                    sm:text-[9px]
+                    md:text-[10px]
+                    text-sky-950/60
+                  "
+                >
+                  WEB • API • UI
+                </span>
+              </motion.div>
+
+              {/* =================================================
+                  DESCRIPTION
+                  ================================================= */}
+
+              <motion.p
+                initial={{
+                  opacity: 0,
+                  y: 15,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  duration: 0.6,
+                  delay: 0.4,
+                }}
+                className="
+                  mt-5
+                  sm:mt-6
+                  max-w-[600px]
+                  mx-auto
+                  lg:mx-0
+                  text-[11px]
+                  min-[375px]:text-xs
+                  sm:text-sm
+                  md:text-[15px]
+                  leading-6
+                  sm:leading-7
+                  text-sky-950/65
+                  font-sans
+                "
+              >
+                I build modern digital experiences by combining clean code,
+                interactive interfaces, reliable backend systems, and thoughtful
+                visual design.
+              </motion.p>
+
+              {/* =================================================
+                  CTA
+                  ================================================= */}
+
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  y: 15,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  duration: 0.6,
+                  delay: 0.5,
+                }}
+                className="
+                  mt-6
+                  sm:mt-8
+                  flex
+                  flex-wrap
+                  justify-center
+                  lg:justify-start
+                  gap-2.5
+                  sm:gap-3
+                "
+              >
+                {/* View Work */}
+
+                <a
+                  href="#projects"
+                  className="
+                    group
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    bg-sky-950
+                    text-white
+                    px-4
+                    sm:px-5
+                    py-2.5
+                    sm:py-3
+                    font-pixel
+                    text-[8px]
+                    sm:text-[9px]
+                    md:text-[10px]
+                    border-b-4
+                    border-sky-950/40
+                    hover:-translate-y-1
+                    transition-all
+                  "
+                >
+                  VIEW MY WORK
+                  <ArrowRight
+                    className="
+                      w-3
+                      h-3
+                      sm:w-3.5
+                      sm:h-3.5
+                      transition-transform
+                      group-hover:translate-x-1
+                    "
+                  />
+                </a>
+
+                {/* About */}
+
+                <a
+                  href="#about"
+                  className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    px-4
+                    sm:px-5
+                    py-2.5
+                    sm:py-3
+                    bg-white/30
+                    backdrop-blur-sm
+                    border
+                    border-white/50
+                    text-sky-950
+                    font-pixel
+                    text-[8px]
+                    sm:text-[9px]
+                    md:text-[10px]
+                    hover:bg-white/50
+                    transition-all
+                  "
+                >
+                  ABOUT ME
+                </a>
+              </motion.div>
+
+              {/* =================================================
+                  TECH STACK
+                  ================================================= */}
+
+              <motion.div
+                initial={{
+                  opacity: 0,
+                }}
+                animate={{
+                  opacity: 1,
+                }}
+                transition={{
+                  delay: 0.8,
+                  duration: 0.8,
+                }}
+                className="
+                  mt-6
+                  sm:mt-8
+                  flex
+                  items-center
+                  justify-center
+                  lg:justify-start
+                  gap-2.5
+                  sm:gap-3
+                "
+              >
+                <Sparkles
+                  className="
+                    w-3
+                    h-3
+                    sm:w-3.5
+                    sm:h-3.5
+                    text-yellow-500
+                    shrink-0
+                  "
+                />
+
+                <span
+                  className="
+                    font-mono
+                    text-[7px]
+                    min-[375px]:text-[8px]
+                    sm:text-[9px]
+                    text-sky-950/45
+                    tracking-wide
+                  "
+                >
+                  REACT • TAILWIND • NODE • LARAVEL
+                </span>
+              </motion.div>
             </div>
 
-            <h1 className="text-lg sm:text-2xl md:text-3xl font-pixel text-amber-300 leading-snug md:leading-relaxed">
-              &gt; WELCOME, <br /> I'M RANGGA
-              <motion.span
-                animate={{ opacity: [1, 0] }}
-                transition={{
-                  duration: 0.8,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                }}
-                className="inline-block ml-1"
-              >
-                _
-              </motion.span>
-            </h1>
+            {/* =================================================
+                RIGHT VISUAL
+                ================================================= */}
 
-            <p className="text-emerald-100 text-xs sm:text-xs md:text-sm font-sans leading-relaxed max-w-2xl">
-              Halo! Saya adalah pengembang perangkat lunak yang berfokus pada
-              pembangunan solusi web dari ujung ke ujung — mulai dari arsitektur
-              backend, antarmuka web interaktif, hingga visual pixel art.
-            </p>
+            <div
+              className="
+                hidden
+                sm:flex
+                lg:flex
+                items-center
+                justify-center
+                shrink-0
+                scale-90
+                md:scale-100
+                xl:scale-110
+              "
+            >
+              <PixelTerminal reduceMotion={reduceMotion} />
+            </div>
           </div>
         </div>
       </motion.div>
 
-      {/* Expertise Dashboard Boxes */}
-      <div className="w-full max-w-4xl mt-4 sm:mt-6 z-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-5">
-          {EXPERTISE.map((item, i) => {
-            const Icon = item.icon;
-            return (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                whileHover={{ y: -4 }}
-                style={{ "--accent": item.hex }}
-                className="group relative bg-emerald-950/60 backdrop-blur-sm border border-white/10 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 overflow-hidden transition-[border-color,box-shadow] duration-300 hover:border-[color:var(--accent)]/50 hover:shadow-[0_10px_40px_-14px_var(--accent)]"
-              >
-                <div
-                  className="absolute inset-x-0 top-0 h-[3px] opacity-80"
-                  style={{ background: item.hex }}
-                />
+      {/* =====================================================
+          BOTTOM ATMOSPHERE
+          ===================================================== */}
 
-                <div className="flex items-center justify-between mb-3 sm:mb-4">
-                  <div
-                    className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-                    style={{ background: `${item.hex}1A` }}
-                  >
-                    <Icon
-                      className="w-4 h-4 sm:w-5 sm:h-5"
-                      style={{ color: item.hex }}
-                    />
-                  </div>
-                  <span className="flex items-center gap-1.5 text-[8px] sm:text-[9px] font-mono text-emerald-300/70 tracking-wide">
-                    <span
-                      className="w-1.5 h-1.5 rounded-full animate-pulse"
-                      style={{ background: item.hex }}
-                    />
-                    READY
-                  </span>
-                </div>
+      <div
+        className="
+          absolute
+          bottom-0
+          left-0
+          right-0
+          h-20
+          sm:h-24
+          md:h-28
+          lg:h-32
+          pointer-events-none
+        "
+      >
+        {/* Glow */}
 
-                <h3
-                  className="font-pixel text-[10px] sm:text-[11px] md:text-xs mb-1 tracking-wide"
-                  style={{ color: item.hex }}
-                >
-                  {item.title}
-                </h3>
+        <div
+          className="
+            absolute
+            inset-0
+            bg-gradient-to-t
+            from-emerald-100/35
+            to-transparent
+          "
+        />
 
-                <p className="font-mono text-[9px] sm:text-[10px] text-amber-100/60 mb-2">
-                  {item.subtitle}
-                </p>
+        {/* Pixel Horizon */}
 
-                <p className="font-sans text-[11px] sm:text-xs text-emerald-100/75 leading-relaxed mb-3 sm:mb-4">
-                  {item.description}
-                </p>
+        <div
+          className="
+            absolute
+            bottom-0
+            left-0
+            right-0
+            h-4
+            sm:h-5
+          "
+          style={{
+            clipPath:
+              "polygon(0 70%, 5% 50%, 10% 65%, 15% 40%, 20% 60%, 25% 45%, 30% 65%, 35% 50%, 40% 70%, 45% 45%, 50% 65%, 55% 40%, 60% 60%, 65% 45%, 70% 65%, 75% 50%, 80% 70%, 85% 45%, 90% 60%, 95% 40%, 100% 60%, 100% 100%, 0 100%)",
+          }}
+        />
+      </div>
 
-                <div className="pt-2.5 sm:pt-3 border-t border-white/5">
-                  <span className="font-mono text-[8px] sm:text-[9px] text-emerald-200/60">
-                    {item.tag}
-                  </span>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+      {/* =====================================================
+          SCROLL INDICATOR
+          ===================================================== */}
 
-        {/* Fireflies */}
-        {fireflies.map((f, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1.5 h-1.5 rounded-full bg-amber-300 pointer-events-none"
-            style={{
-              top: `${f.top}%`,
-              left: `${f.left}%`,
-              boxShadow: "0 0 6px 2px rgba(251,191,36,0.7)",
-            }}
-            initial={{ opacity: 0 }}
-            animate={{
-              opacity: [0, 1, 0.4, 1, 0],
-              x: [0, 10, -6, 8, 0],
-              y: [0, -8, 6, -4, 0],
-            }}
-            transition={{
-              duration: 5 + f.delay,
-              repeat: reduceMotion ? 0 : Infinity,
-              delay: f.delay,
-            }}
+      <motion.div
+        initial={{
+          opacity: 0,
+        }}
+        animate={{
+          opacity: 1,
+        }}
+        transition={{
+          delay: 1.2,
+        }}
+        className="
+          absolute
+          bottom-3
+          sm:bottom-5
+          md:bottom-6
+          left-1/2
+          -translate-x-1/2
+          z-30
+          flex
+          flex-col
+          items-center
+          gap-1
+          sm:gap-2
+        "
+      >
+        <span
+          className="
+            font-pixel
+            text-[6px]
+            sm:text-[7px]
+            md:text-[8px]
+            text-sky-950/45
+            tracking-wider
+            whitespace-nowrap
+          "
+        >
+          SCROLL TO EXPLORE
+        </span>
+
+        <motion.div
+          animate={
+            reduceMotion
+              ? {}
+              : {
+                  y: [0, 4, 0],
+                }
+          }
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+          }}
+        >
+          <ArrowDown
+            className="
+              w-3
+              h-3
+              sm:w-4
+              sm:h-4
+              text-sky-950/45
+            "
           />
-        ))}
-      </div>
-
-      {/* Scroll Down Indicator */}
-      <div className="mt-6 sm:mt-8 font-pixel text-[8px] sm:text-[9px] md:text-[10px] text-emerald-100 animate-bounce z-20 bg-emerald-950/90 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border border-emerald-700 flex items-center gap-1.5 sm:gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)]">
-        <ArrowDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400" />{" "}
-        SCROLL DOWN TO EXPLORE
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
