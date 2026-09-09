@@ -27,10 +27,10 @@ export default function App() {
       <LifeStory />
       <TechHarvest />
       <CampfireConnect />
-      {/* <PlaySection /> */}
-      {/* <ChessGarden /> */}
-      {/* <CodeWorkbench /> */}
-      {/* <MusicPlayer /> */}
+      <PlaySection />
+      <ChessGarden />
+      <CodeWorkbench />
+      <MusicPlayer />
     </div>
   );
 }

@@ -1089,27 +1089,9 @@ export default function HeroSection() {
                 "
               >
                 <span className="relative flex h-2.5 w-2.5">
-                  <span
-                    className="
-                      absolute
-                      inline-flex
-                      h-full
-                      w-full
-                      animate-ping
-                      bg-emerald-300
-                      opacity-60
-                    "
-                  />
+                  <span />
 
-                  <span
-                    className="
-                      relative
-                      inline-flex
-                      h-2.5
-                      w-2.5
-                      bg-emerald-400
-                    "
-                  />
+                  <span />
                 </span>
 
                 <span
@@ -1122,9 +1104,7 @@ export default function HeroSection() {
                     sm:tracking-[0.2em]
                     text-white/80
                   "
-                >
-                  AVAILABLE FOR PROJECTS
-                </span>
+                ></span>
               </motion.div>
 
               {/* Hello */}
@@ -1272,7 +1252,7 @@ export default function HeroSection() {
                     text-sky-950/60
                   "
                 >
-                  WEB • API • UI
+                  BUILD • DEVELOP • DELIVER
                 </span>
               </motion.div>
 
@@ -1309,9 +1289,10 @@ export default function HeroSection() {
                   font-sans
                 "
               >
-                I build modern digital experiences by combining clean code,
-                interactive interfaces, reliable backend systems, and thoughtful
-                visual design.
+                Saya merancang dan membangun pengalaman digital full-stack
+                dengan memadukan kode yang terstruktur, desain antarmuka yang
+                intuitif, dan pendekatan problem solving yang efektif untuk
+                menghasilkan solusi digital yang fungsional dan bermakna.
               </motion.p>
 
               {/* =================================================
@@ -1368,7 +1349,7 @@ export default function HeroSection() {
                     transition-all
                   "
                 >
-                  VIEW MY WORK
+                  LIHAT PROYEK SAYA
                   <ArrowRight
                     className="
                       w-3
@@ -1407,7 +1388,7 @@ export default function HeroSection() {
                     transition-all
                   "
                 >
-                  ABOUT ME
+                  TENTANG SAYA
                 </a>
               </motion.div>
 
@@ -1437,17 +1418,6 @@ export default function HeroSection() {
                   sm:gap-3
                 "
               >
-                <Sparkles
-                  className="
-                    w-3
-                    h-3
-                    sm:w-3.5
-                    sm:h-3.5
-                    text-yellow-500
-                    shrink-0
-                  "
-                />
-
                 <span
                   className="
                     font-mono
@@ -1458,7 +1428,7 @@ export default function HeroSection() {
                     tracking-wide
                   "
                 >
-                  REACT • TAILWIND • NODE • LARAVEL
+                  REACT • TAILWIND CSS
                 </span>
               </motion.div>
             </div>
@@ -1573,7 +1543,7 @@ export default function HeroSection() {
             whitespace-nowrap
           "
         >
-          SCROLL TO EXPLORE
+          SCROLL UNTUK MENJELAJAH
         </span>
 
         <motion.div

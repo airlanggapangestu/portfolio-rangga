@@ -1,246 +1,123 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useMemo } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
-  motion,
-  AnimatePresence,
-  useScroll,
-  useTransform,
-} from "framer-motion";
-import {
-  Code2,
-  Trophy,
-  Users,
-  Award,
-  Laugh,
-  Maximize2,
-  X,
-  ExternalLink,
-  CheckCircle2,
-  Cpu,
-  Calendar,
-  Flag,
-  GraduationCap,
-  ChevronRight,
-  Globe,
+  Swords,
+  Bug,
+  MousePointerClick,
+  ChevronDown,
+  Gem,
+  Pickaxe,
+  ArrowDown,
+  Flame,
 } from "lucide-react";
 
 /* =========================================================
-   LIFE STORY — Pohon Beringin Pixel dari atas ke bawah
+   PLAY SECTION — Underground World
+   Nyambung dari soil Campfire (#493522)
+   Tema: Cave/Underground yang immersive
 ========================================================= */
 
-/* ---------- POHON BERINGIN KIRI ---------- */
-function BanyanTreeLeft() {
-  const size = 6;
-
-  const grid = [
-    // Kanopi atas (full)
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    // Ranting mulai menyebar
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHH.HHHHHHHHHHHHHHHHH",
-    "HHH..HHHHHHHHHHHHHHHHH",
-    "HH....HHHHHHHHHHHHHHHH",
-    "HH.....HHHHHHHHHHHHHHH",
-    "HH......HHHHHHHHHHHHHH",
-    "HH.......HHHHHHHHHHHHH",
-    "HH........HHHHHHHHHHHH",
-    // Batang & akar
-    "TT........HHHHHHHHHHHH",
-    "TT.........HHHHHHHHHHH",
-    "TT..........HHHHHHHHHH",
-    "TT...........HHHHHHHHH",
-    "TT............HHHHHHHH",
-    "TT.............HHHHHHH",
-    "TT..............HHHHHH",
-    "TT...............HHHHH",
-    "TT................HHHH",
-    "TT.................HHH",
-    "TT..................HH",
-    "TT...................H",
-    // Akar bawah
-    "TT....................",
-    "TT....................",
-    "TT....................",
-    "TT....................",
-    "TT....................",
-    "TT....................",
-    "TT....................",
-    "TT....................",
-  ];
-
-  const width = 23 * size;
-  const height = 35 * size;
-
+/* ---------- TOP SOIL (sambungan persis dari Campfire) ---------- */
+function TopSoil() {
   return (
-    <div
-      className="absolute left-0 top-0 h-full pointer-events-none"
-      style={{ zIndex: 3, width: `${width}px` }}
-    >
-      <div className="relative w-full h-full">
-        {grid.map((row, y) =>
-          row.split("").map((ch, x) => {
-            if (ch === ".") return null;
-            let color;
-            if (ch === "H") {
-              if (y < 4) color = "#4ade80";
-              else if (y < 10) color = "#22c55e";
-              else color = "#16a34a";
-            } else {
-              color = y < 25 ? "#5D3A1A" : "#3d2412";
-            }
-            return (
-              <div
-                key={`${x}-${y}`}
-                style={{
-                  position: "absolute",
-                  left: `${x * size}px`,
-                  top: `${y * size}px`,
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  background: color,
-                }}
-              />
-            );
-          }),
-        )}
+    <div className="absolute inset-x-0 top-0 h-[45px] z-[15] pointer-events-none">
+      {/* Soil utama — sama dengan FinalGround Campfire */}
+      <div className="absolute top-0 left-0 w-full h-[28px] bg-[#493522]" />
+
+      {/* Soil texture — sama dengan Campfire */}
+      <div className="absolute top-[5px] left-[7%] h-2 w-8 bg-[#3a2a1d]" />
+      <div className="absolute top-[8px] left-[22%] h-2 w-5 bg-[#5c4127]" />
+      <div className="absolute top-[4px] left-[48%] h-2 w-9 bg-[#38281c]" />
+      <div className="absolute top-[7px] right-[30%] h-2 w-7 bg-[#60452c]" />
+      <div className="absolute top-[5px] right-[12%] h-2 w-6 bg-[#38281c]" />
+      <div className="absolute top-[10px] left-[35%] h-2 w-6 bg-[#5c4127]" />
+      <div className="absolute top-[8px] right-[50%] h-2 w-5 bg-[#3a2a1d]" />
+
+      {/* Rumput sisa dari Campfire */}
+      <div className="absolute top-[24px] left-[12%] h-2 w-[3px] bg-[#4c7e43]" />
+      <div className="absolute top-[22px] left-[13%] h-3 w-[3px] bg-[#5c914d]" />
+      <div className="absolute top-[25px] right-[14%] h-2 w-[3px] bg-[#4c7e43]" />
+      <div className="absolute top-[23px] right-[13%] h-3 w-[3px] bg-[#5c914d]" />
+
+      {/* Transisi ke cave */}
+      <div className="absolute bottom-0 left-0 w-full h-[17px] bg-gradient-to-b from-[#493522] to-transparent" />
+    </div>
+  );
+}
+
+/* ---------- CAVE WALLS (tebing kiri-kanan) ---------- */
+function CaveWalls() {
+  return (
+    <div className="absolute inset-0 z-[2] pointer-events-none overflow-hidden">
+      {/* Left wall */}
+      <div className="absolute left-0 top-0 h-full w-[14%] min-w-[70px]">
+        <div className="absolute inset-0 bg-[#2d2823]" />
+        <div className="absolute inset-y-0 right-0 w-[4px] bg-[#1f1b17]" />
+        {/* Wall texture */}
+        <div className="absolute left-[20%] top-[15%] h-[60%] w-[8px] bg-[#35302a]" />
+        <div className="absolute left-[40%] top-[35%] h-[50%] w-[6px] bg-[#26221e]" />
+        <div className="absolute left-[15%] top-[60%] h-[30%] w-[10px] bg-[#3d3832]" />
+      </div>
+
+      {/* Right wall */}
+      <div className="absolute right-0 top-0 h-full w-[14%] min-w-[70px]">
+        <div className="absolute inset-0 bg-[#2d2823]" />
+        <div className="absolute inset-y-0 left-0 w-[4px] bg-[#1f1b17]" />
+        {/* Wall texture */}
+        <div className="absolute right-[25%] top-[20%] h-[55%] w-[8px] bg-[#35302a]" />
+        <div className="absolute right-[45%] top-[45%] h-[45%] w-[6px] bg-[#26221e]" />
+        <div className="absolute right-[18%] top-[65%] h-[25%] w-[10px] bg-[#3d3832]" />
       </div>
     </div>
   );
 }
 
-/* ---------- POHON BERINGIN KANAN ---------- */
-function BanyanTreeRight() {
-  const size = 6;
-
-  const grid = [
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHHHHHHHHHHHHHHHHHHHH",
-    "HHHHHHHHHHHHHHHHH.HHHH",
-    "HHHHHHHHHHHHHHHH..HHHH",
-    "HHHHHHHHHHHHHHH...HHHH",
-    "HHHHHHHHHHHHHH....HHHH",
-    "HHHHHHHHHHHHH.....HHHH",
-    "HHHHHHHHHHHH......HHHH",
-    "HHHHHHHHHHH.......HHHH",
-    "HHHHHHHHHH........TTTT",
-    "HHHHHHHHH.........TTTT",
-    "HHHHHHHH..........TTTT",
-    "HHHHHHH...........TTTT",
-    "HHHHHH............TTTT",
-    "HHHHH.............TTTT",
-    "HHHH..............TTTT",
-    "HHH...............TTTT",
-    "HH................TTTT",
-    "H.................TTTT",
-    "..................TTTT",
-    "..................TTTT",
-    "..................TTTT",
-    "..................TTTT",
-    "..................TTTT",
-    "..................TTTT",
-    "..................TTTT",
-    "..................TTTT",
-    "..................TTTT",
-  ];
-
-  const width = 23 * size;
-  const height = 35 * size;
-
-  return (
-    <div
-      className="absolute right-0 top-0 h-full pointer-events-none"
-      style={{
-        zIndex: 3,
-        width: `${width}px`,
-        transform: "scaleX(-1)",
-      }}
-    >
-      <div className="relative w-full h-full">
-        {grid.map((row, y) =>
-          row.split("").map((ch, x) => {
-            if (ch === ".") return null;
-            let color;
-            if (ch === "H") {
-              if (y < 4) color = "#4ade80";
-              else if (y < 10) color = "#22c55e";
-              else color = "#16a34a";
-            } else {
-              color = y < 25 ? "#5D3A1A" : "#3d2412";
-            }
-            return (
-              <div
-                key={`${x}-${y}`}
-                style={{
-                  position: "absolute",
-                  left: `${x * size}px`,
-                  top: `${y * size}px`,
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  background: color,
-                }}
-              />
-            );
-          }),
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ---------- VINES ATAS (menjuntai dari atas) ---------- */
-function HangingVines() {
-  const vines = [
-    { left: "25%", length: 180, color: "#16a34a", delay: 0 },
-    { left: "40%", length: 120, color: "#15803d", delay: 1 },
-    { left: "60%", length: 160, color: "#16a34a", delay: 2 },
-    { left: "75%", length: 100, color: "#15803d", delay: 0.5 },
+/* ---------- STALACTITES (batu gantung) ---------- */
+function Stalactites() {
+  const rocks = [
+    { left: "5%", width: 22, height: 70, delay: 0 },
+    { left: "15%", width: 14, height: 45, delay: 0.8 },
+    { left: "28%", width: 18, height: 60, delay: 1.5 },
+    { left: "45%", width: 20, height: 80, delay: 0.4 },
+    { left: "60%", width: 16, height: 50, delay: 2 },
+    { left: "72%", width: 24, height: 75, delay: 1.2 },
+    { left: "85%", width: 15, height: 48, delay: 0.6 },
+    { left: "93%", width: 20, height: 65, delay: 1.8 },
   ];
 
   return (
-    <div className="absolute inset-0 z-[1] pointer-events-none">
-      {vines.map((v, i) => (
+    <div className="absolute top-[40px] inset-x-0 z-[6] pointer-events-none">
+      {rocks.map((rock, i) => (
         <motion.div
           key={i}
           className="absolute top-0"
-          style={{ left: v.left }}
-          animate={{ y: [0, 6, 0] }}
+          style={{ left: rock.left }}
+          animate={{ y: [0, 2, 0] }}
           transition={{
-            duration: 3 + v.delay,
+            duration: 4 + i,
             repeat: Infinity,
             ease: "easeInOut",
+            delay: rock.delay,
           }}
         >
           <div
             style={{
-              width: "3px",
-              height: `${v.length}px`,
-              background: v.color,
+              width: rock.width,
+              height: rock.height,
+              background: i % 2 === 0 ? "#3d3832" : "#35302a",
+              clipPath: "polygon(0 0, 100% 0, 72% 100%, 28% 100%)",
             }}
           />
+          {/* Highlight */}
           <div
-            className="absolute top-[20%] -left-1"
-            style={{ width: "7px", height: "4px", background: "#22c55e" }}
-          />
-          <div
-            className="absolute top-[50%] left-1"
-            style={{ width: "6px", height: "4px", background: "#4ade80" }}
-          />
-          <div
-            className="absolute top-[75%] -left-1"
-            style={{ width: "7px", height: "4px", background: "#16a34a" }}
+            style={{
+              width: rock.width * 0.25,
+              height: rock.height * 0.5,
+              background: "#4a443d",
+              position: "absolute",
+              left: rock.width * 0.2,
+              top: "5%",
+            }}
           />
         </motion.div>
       ))}
@@ -248,54 +125,281 @@ function HangingVines() {
   );
 }
 
-/* ---------- FALLING LEAVES ---------- */
-function FallingLeaves() {
-  const leaves = useMemo(
+/* ---------- ROOTS (akar menembus dari soil) ---------- */
+function CaveRoots() {
+  const roots = [
+    { left: "6%", height: 200, rotate: -15, width: 7, delay: 0 },
+    { left: "16%", height: 140, rotate: 8, width: 5, delay: 1 },
+    { left: "25%", height: 100, rotate: -5, width: 6, delay: 2 },
+    { left: "75%", height: 110, rotate: 5, width: 6, delay: 0.5 },
+    { left: "84%", height: 170, rotate: 15, width: 5, delay: 1.5 },
+    { left: "92%", height: 220, rotate: -10, width: 7, delay: 2.5 },
+  ];
+
+  return (
+    <div className="absolute inset-x-0 top-0 z-[8] h-[50%] pointer-events-none">
+      {roots.map((root, i) => (
+        <motion.div
+          key={i}
+          className="absolute top-0 origin-top"
+          style={{ left: root.left }}
+          animate={{
+            rotate: [root.rotate - 1.5, root.rotate + 1.5, root.rotate - 1.5],
+          }}
+          transition={{
+            duration: 5 + i,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: root.delay,
+          }}
+        >
+          <div
+            style={{
+              width: root.width,
+              height: root.height,
+              background: i % 2 === 0 ? "#573621" : "#432b1c",
+              transform: `rotate(${root.rotate}deg)`,
+              clipPath:
+                "polygon(15% 0, 100% 0, 80% 70%, 100% 100%, 50% 85%, 0 100%, 20% 65%)",
+            }}
+          />
+          {/* Cabang akar kecil */}
+          <div
+            className="absolute top-[35%] left-1"
+            style={{
+              width: 3,
+              height: 45,
+              background: i % 2 === 0 ? "#573621" : "#432b1c",
+              transform: "rotate(20deg)",
+            }}
+          />
+          <div
+            className="absolute top-[55%] -left-1"
+            style={{
+              width: 2,
+              height: 35,
+              background: i % 2 === 0 ? "#432b1c" : "#573621",
+              transform: "rotate(-15deg)",
+            }}
+          />
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+/* ---------- CRYSTALS (glowing) ---------- */
+function Crystals() {
+  const crystals = [
+    { left: "8%", top: "48%", size: 22, color: "#7dd3a8", rotate: -10 },
+    { left: "18%", top: "70%", size: 15, color: "#a78bfa", rotate: 8 },
+    { left: "30%", top: "78%", size: 18, color: "#7dd3a8", rotate: -5 },
+    { left: "68%", top: "65%", size: 16, color: "#a78bfa", rotate: 8 },
+    { left: "80%", top: "42%", size: 24, color: "#7dd3a8", rotate: 10 },
+    { left: "90%", top: "68%", size: 14, color: "#fbbf24", rotate: -8 },
+  ];
+
+  return (
+    <div className="absolute inset-0 z-[5] pointer-events-none">
+      {crystals.map((crystal, i) => (
+        <motion.div
+          key={i}
+          className="absolute"
+          style={{
+            left: crystal.left,
+            top: crystal.top,
+            rotate: crystal.rotate,
+          }}
+          animate={{
+            opacity: [0.25, 0.75, 0.3, 0.75, 0.25],
+            scale: [0.88, 1.05, 0.88],
+          }}
+          transition={{ duration: 3.5 + i, repeat: Infinity, delay: i * 0.4 }}
+        >
+          {/* Glow */}
+          <div
+            className="absolute -inset-4 rounded-full blur-xl"
+            style={{ background: crystal.color, opacity: 0.12 }}
+          />
+          <Gem
+            size={crystal.size}
+            className={crystal.color}
+            fill={crystal.color}
+            strokeWidth={1.5}
+          />
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+/* ---------- FLOATING PARTICLES ---------- */
+function FloatingParticles() {
+  const particles = useMemo(
     () =>
-      Array.from({ length: 8 }, () => ({
+      Array.from({ length: 14 }, (_, i) => ({
         left: Math.random() * 100,
-        delay: Math.random() * 5,
-        duration: 6 + Math.random() * 5,
-        size: 7 + Math.random() * 8,
-        color: ["#22c55e", "#16a34a", "#15803d", "#4ade80"][
-          Math.floor(Math.random() * 4)
-        ],
+        top: 15 + Math.random() * 80,
+        size: 2 + Math.random() * 3,
+        delay: Math.random() * 4,
+        duration: 4 + Math.random() * 4,
       })),
     [],
   );
 
   return (
-    <div className="absolute inset-0 z-[2] pointer-events-none">
-      {leaves.map((l, i) => (
+    <div className="absolute inset-0 z-[4] pointer-events-none">
+      {particles.map((p, i) => (
         <motion.div
           key={i}
-          className="absolute"
-          style={{ left: `${l.left}%` }}
-          initial={{ y: -20, opacity: 0, rotate: 0 }}
+          className="absolute bg-[#b7a889]/40 rounded-full"
+          style={{
+            left: `${p.left}%`,
+            top: `${p.top}%`,
+            width: p.size,
+            height: p.size,
+          }}
           animate={{
-            y: ["-20px", "100vh"],
-            opacity: [0, 0.5, 0.5, 0],
-            rotate: [0, 360],
-            x: [0, 20, -15, 10, 0],
+            y: [0, -25, 0],
+            x: [0, 8, -5, 0],
+            opacity: [0.08, 0.5, 0.08],
           }}
           transition={{
-            duration: l.duration,
+            duration: p.duration,
             repeat: Infinity,
-            delay: l.delay,
-            ease: "linear",
+            delay: p.delay,
+            ease: "easeInOut",
           }}
-        >
-          <div
-            style={{
-              width: l.size,
-              height: l.size * 0.7,
-              background: l.color,
-              clipPath: "polygon(0 0, 100% 0, 50% 100%)",
-            }}
-          />
-        </motion.div>
+        />
       ))}
     </div>
+  );
+}
+
+/* ---------- MOUSE PARALLAX GLOW ---------- */
+function CaveGlow() {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const smoothX = useSpring(mouseX, { stiffness: 60, damping: 20 });
+  const smoothY = useSpring(mouseY, { stiffness: 60, damping: 20 });
+  const x = useTransform(smoothX, [-400, 400], [-40, 40]);
+  const y = useTransform(smoothY, [-300, 300], [-30, 30]);
+
+  const handleMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseX.set(e.clientX - (rect.left + rect.width / 2));
+    mouseY.set(e.clientY - (rect.top + rect.height / 2));
+  };
+
+  return (
+    <div className="absolute inset-0 z-[1]" onMouseMove={handleMove}>
+      <motion.div
+        className="absolute left-1/2 top-[50%] h-[250px] w-[250px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#7dd3a8]/5 blur-[80px] pointer-events-none"
+        style={{ x, y }}
+      />
+    </div>
+  );
+}
+
+/* ---------- BOTTOM TRANSITION ---------- */
+function BottomTransition() {
+  return (
+    <div className="absolute inset-x-0 bottom-0 h-[55px] z-[10] pointer-events-none">
+      <div className="absolute bottom-0 left-0 w-full h-[38px] bg-[#0b0908]" />
+      <div className="absolute bottom-[38px] left-0 w-full h-[17px] bg-gradient-to-t from-[#0b0908] to-transparent" />
+
+      {/* Batu kecil di bawah */}
+      <div className="absolute bottom-0 left-[10%] h-8 w-14 bg-[#211d19] [clip-path:polygon(0_100%,20%_40%,40%_60%,60%_20%,80%_50%,100%_100%)]" />
+      <div className="absolute bottom-0 right-[10%] h-9 w-16 bg-[#211d19] [clip-path:polygon(0_100%,15%_50%,35%_25%,55%_55%,75%_30%,100%_100%)]" />
+    </div>
+  );
+}
+
+/* =========================================================
+   GAME CARD
+========================================================= */
+
+function GameCard({ href, icon, title, code, description, accent, delay }) {
+  return (
+    <motion.a
+      href={href}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.5, delay }}
+      whileHover={{ y: -5 }}
+      className="group relative block"
+    >
+      {/* Shadow */}
+      <div className="absolute inset-0 translate-x-2 translate-y-2 bg-[#080706]" />
+
+      {/* Card */}
+      <div
+        className="relative border-2 bg-[#15130f]/95 p-5 transition-all duration-300"
+        style={{ borderColor: `${accent}50` }}
+      >
+        {/* Top accent line */}
+        <motion.div
+          className="absolute left-0 top-0 h-[2px] w-full origin-left"
+          style={{ background: accent }}
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: delay + 0.2 }}
+        />
+
+        {/* Header */}
+        <div className="mb-4 flex items-center gap-3">
+          <motion.div
+            className="flex h-11 w-11 shrink-0 items-center justify-center border-2 bg-[#0b0a08]"
+            style={{ borderColor: accent, color: accent }}
+            whileHover={{ rotate: [0, -6, 6, 0], scale: 1.05 }}
+            transition={{ duration: 0.4 }}
+          >
+            {icon}
+          </motion.div>
+          <div>
+            <h3 className="font-pixel text-[10px] text-[#e7dfc5] sm:text-[11px]">
+              {title}
+            </h3>
+            <p
+              className="mt-1 font-mono text-[7px] tracking-[0.15em]"
+              style={{ color: accent }}
+            >
+              {code}
+            </p>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="mb-3 flex items-center gap-2">
+          <div className="h-[2px] w-6" style={{ background: accent }} />
+          <div className="h-[1px] flex-1 bg-[#2d2924]" />
+        </div>
+
+        <p className="text-[10px] leading-relaxed text-[#9d968b] sm:text-[11px]">
+          {description}
+        </p>
+
+        {/* Footer */}
+        <div className="mt-4 flex items-center justify-between border-t border-[#2d2924] pt-3">
+          <span
+            className="flex items-center gap-1.5 font-pixel text-[7px]"
+            style={{ color: accent }}
+          >
+            <MousePointerClick size={11} />
+            MASUK
+          </span>
+          <motion.span
+            className="font-mono text-[10px] text-[#5f594f]"
+            animate={{ x: [0, 4, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            →
+          </motion.span>
+        </div>
+      </div>
+    </motion.a>
   );
 }
 
@@ -303,552 +407,123 @@ function FallingLeaves() {
    MAIN COMPONENT
 ========================================================= */
 
-export default function LifeStory() {
-  const [activeCert, setActiveCert] = useState(null);
-  const [showEduCourse, setShowEduCourse] = useState(false);
-  const sectionRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-
-  const contentY = useTransform(scrollYProgress, [0, 1], [0, -20]);
-  const contentOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.2, 0.8, 1],
-    [0, 1, 1, 0.3],
-  );
-
-  const itCertificates = [
-    {
-      id: "educourse-starter",
-      title: "Coding for Teens (Starter)",
-      issuer: "Educourse.id x SMK Medikacom RPL",
-      date: "05 Desember 2024",
-      badge: "STARTER LEVEL",
-      image: "/certs/educourse-starter.jpeg",
-    },
-    {
-      id: "educourse-beginner",
-      title: "Coding for Teens (Beginner)",
-      issuer: "Educourse.id x SMK Medikacom RPL",
-      date: "05 Juni 2025",
-      badge: "BEGINNER LEVEL",
-      image: "/certs/educourse-beginner.jpeg",
-    },
-    {
-      id: "educourse-advance",
-      title: "Coding for Teens Level Advance",
-      issuer: "Educourse.id x SMK Medikacom RPL",
-      date: "16 Desember 2025",
-      badge: "ADVANCE LEVEL",
-      image: "/certs/educourse-advance.jpeg",
-    },
-  ];
-
-  const aiCertificate = {
-    id: "ai-ready-asean",
-    title: "AI Ready ASEAN",
-    fullTitle: "Certificate of Completion",
-    issuer: "ASEAN Foundation x Google.org",
-    date: "12 Agustus 2026",
-    badge: "AI READY",
-    image: "/certs/ai-ready-asean.jpeg",
-    description:
-      "Menyelesaikan seluruh bab modul pembelajaran AI berdurasi 12 jam di AIClassASEAN.org",
-  };
-
-  const nonItAchievements = [
-    {
-      id: "comedy",
-      title: "Stand Up Comedy",
-      level: "Tingkat Sekolah",
-      icon: Laugh,
-      hex: "#FBBF24",
-      certImage:
-        "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80",
-      schoolNewsUrl:
-        "https://medikacom.sch.id/kegiatan-lomba-literasi-smk-medikacom-bandung/",
-    },
-    {
-      id: "chess",
-      title: "Lomba Catur",
-      level: "Tingkat Sekolah",
-      icon: Award,
-      hex: "#F59E0B",
-      certImage:
-        "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=800&q=80",
-      schoolNewsUrl: null,
-    },
-  ];
-
-  const committees = [
-    {
-      title: "Ketua Acara — PORSENI",
-      desc: "Mengatur konsep, rundown, dan eksekusi acara.",
-      icon: Users,
-      hex: "#34D399",
-    },
-    {
-      title: "Wakil Ketua Acara — Event 17 Agustus",
-      desc: "Koordinasi teknis antardivisi perlombaan.",
-      icon: Calendar,
-      hex: "#FBBF24",
-    },
-    {
-      title: "Seksi Logistik — PORAK",
-      desc: "Pengadaan alat perlombaan & setup tempat.",
-      icon: Flag,
-      hex: "#38BDF8",
-    },
-  ];
-
+export default function PlaySection() {
   return (
     <section
-      ref={sectionRef}
-      id="story"
-      className="relative min-h-screen py-16 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center"
+      id="play"
+      className="relative min-h-screen w-full overflow-hidden text-white"
       style={{
-        background:
-          "linear-gradient(180deg, #d7eadf 0%, #b8dced 10%, #8bc7e8 25%, #5da05f 45%, #2d6b3f 65%, #1a4028 85%, #0f2a1a 100%)",
+        background: `
+          linear-gradient(
+            180deg,
+            #493522 0%,
+            #493522 3%,
+            #302a25 10%,
+            #25211d 25%,
+            #1c1916 45%,
+            #100e0c 70%,
+            #0b0908 100%
+          )
+        `,
       }}
     >
-      {/* ===== LAYER 1: HANGING VINES ===== */}
-      <HangingVines />
+      {/* LAYERS */}
+      <CaveGlow />
+      <CaveWalls />
+      <TopSoil />
+      <Stalactites />
+      <CaveRoots />
+      <Crystals />
+      <FloatingParticles />
+      <BottomTransition />
 
-      {/* ===== LAYER 2: FALLING LEAVES ===== */}
-      <FallingLeaves />
-
-      {/* ===== LAYER 3: POHON BERINGIN KIRI & KANAN ===== */}
-      <BanyanTreeLeft />
-      <BanyanTreeRight />
-
-      {/* ===== CONTENT ===== */}
-      <motion.div
-        style={{ y: contentY, opacity: contentOpacity }}
-        className="relative z-20 max-w-4xl mx-auto w-full space-y-4 sm:space-y-5"
-      >
-        {/* HEADER */}
+      {/* CONTENT */}
+      <div className="relative z-[20] mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-center px-5 pb-24 pt-32 text-center sm:px-8 sm:pt-28">
+        {/* Badge */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: -15 }}
           whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-4 sm:mb-6"
+          className="mb-4 inline-flex items-center gap-2 border border-[#5f594f] bg-[#15130f]/85 px-3 py-1.5"
         >
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-amber-400 text-emerald-950 font-pixel text-[9px] sm:text-[10px] px-4 py-1.5 rounded-full shadow-[0_4px_16px_-4px_rgba(251,191,36,0.6)]"
-          >
-            <Cpu className="w-3.5 h-3.5" /> EXPERIENCE & JOURNEY BOARD
-          </motion.div>
-          <motion.h2
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="text-lg sm:text-xl md:text-2xl font-pixel text-amber-300 tracking-wide mt-3 drop-shadow-[0_3px_0_rgba(0,0,0,0.4)]"
-          >
-            ACHIEVEMENTS & COMMITTEES
-          </motion.h2>
+          <motion.span
+            className="h-2 w-2 bg-[#7dd3a8]"
+            animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1, 0.8] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+          <span className="font-mono text-[8px] tracking-[0.18em] text-[#9d968b]">
+            BAWAH TANAH // AREA BERMAIN
+          </span>
         </motion.div>
 
-        {/* ===== CERTIFICATES ===== */}
+        {/* Title */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="relative bg-emerald-950/80 backdrop-blur-sm border border-white/15 rounded-2xl p-4 sm:p-6 space-y-3 text-emerald-100"
         >
-          <div className="absolute inset-x-0 top-0 h-[3px] rounded-t-2xl bg-gradient-to-r from-emerald-400 via-amber-300 to-emerald-400 opacity-80" />
-
-          <div className="flex items-center gap-2.5 border-b border-white/10 pb-3">
-            <div className="p-2 rounded-lg bg-amber-400/15">
-              <Code2 className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300" />
-            </div>
-            <span className="font-pixel text-[9px] sm:text-[10px] text-amber-300">
-              CERTIFICATES
-            </span>
+          <div className="mb-2 flex items-center justify-center gap-3">
+            <div className="h-[2px] w-8 bg-[#3d3832]" />
+            <Pickaxe size={15} className="text-[#a78bfa]" />
+            <div className="h-[2px] w-8 bg-[#3d3832]" />
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-3">
-            {/* Box Educourse */}
-            <button
-              onClick={() => setShowEduCourse(true)}
-              className="group w-full bg-emerald-900/50 border border-white/10 rounded-xl p-3 sm:p-4 hover:border-amber-300/50 hover:shadow-[0_10px_30px_-14px_rgba(251,191,36,0.5)] transition-all duration-300 text-left"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-lg bg-amber-400/15">
-                    <GraduationCap className="w-5 h-5 text-amber-300" />
-                  </div>
-                  <div>
-                    <h5 className="font-pixel text-[9px] sm:text-[10px] text-amber-100">
-                      EDUCOURSE.ID
-                    </h5>
-                    <p className="text-[9px] sm:text-[10px] text-emerald-200/60">
-                      3 Sertifikat Coding for Teens
-                    </p>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-amber-300 group-hover:translate-x-1 transition-transform" />
-              </div>
+          <h2 className="font-pixel text-xl leading-relaxed text-[#e7dfc5] sm:text-2xl md:text-3xl">
+            AYO
+            <span className="text-[#7dd3a8]"> BERMAIN</span>
+          </h2>
 
-              <div className="flex flex-wrap gap-1.5 mt-3">
-                {["Starter", "Beginner", "Advance"].map((tag) => (
-                  <span
-                    key={tag}
-                    className="font-pixel text-[7px] sm:text-[8px] text-amber-300 bg-amber-400/15 px-2 py-0.5 rounded-full"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </button>
-
-            {/* Box AI Ready ASEAN */}
-            <button
-              onClick={() =>
-                setActiveCert({
-                  title: aiCertificate.fullTitle,
-                  badge: aiCertificate.badge,
-                  image: aiCertificate.image,
-                })
-              }
-              className="group w-full bg-emerald-900/50 border border-white/10 rounded-xl p-3 sm:p-4 hover:border-amber-300/50 hover:shadow-[0_10px_30px_-14px_rgba(251,191,36,0.5)] transition-all duration-300 text-left"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-lg bg-amber-400/15">
-                    <Globe className="w-5 h-5 text-amber-300" />
-                  </div>
-                  <div>
-                    <h5 className="font-pixel text-[9px] sm:text-[10px] text-amber-100">
-                      AI READY ASEAN
-                    </h5>
-                    <p className="text-[9px] sm:text-[10px] text-emerald-200/60">
-                      Certificate of Completion
-                    </p>
-                  </div>
-                </div>
-                <Maximize2 className="w-4 h-4 text-amber-300 group-hover:scale-110 transition-transform" />
-              </div>
-
-              <div className="flex flex-wrap gap-1.5 mt-3">
-                <span className="font-pixel text-[7px] sm:text-[8px] text-amber-300 bg-amber-400/15 px-2 py-0.5 rounded-full">
-                  Asean Foundation
-                </span>
-                <span className="font-pixel text-[7px] sm:text-[8px] text-amber-300 bg-amber-400/15 px-2 py-0.5 rounded-full">
-                  Google.Org
-                </span>
-              </div>
-
-              <p className="text-[8px] sm:text-[9px] text-emerald-300/50 font-mono mt-2">
-                🗓 {aiCertificate.date}
-              </p>
-            </button>
-          </div>
+          <p className="mx-auto mt-3 max-w-md text-[11px] leading-5 text-[#9d968b] sm:text-xs">
+            Dua tantangan tersembunyi di dalam gua — pecahkan puzzle catur dan
+            perbaiki kode yang rusak.
+          </p>
         </motion.div>
 
-        {/* ===== TROPHIES & COMMITTEES ===== */}
-        <div className="grid md:grid-cols-2 gap-4 sm:gap-5">
-          {/* TROPHIES */}
-          <motion.div
-            initial={{ opacity: 0, x: -15 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="relative bg-emerald-950/80 backdrop-blur-sm border border-white/15 rounded-2xl p-4 sm:p-5 space-y-3"
-          >
-            <div className="absolute inset-x-0 top-0 h-[3px] rounded-t-2xl bg-amber-400/80" />
+        {/* Game Cards */}
+        <div className="mt-8 grid w-full max-w-2xl gap-5 sm:grid-cols-2">
+          <GameCard
+            href="#chess"
+            delay={0.2}
+            accent="#a78bfa"
+            icon={<Swords size={18} />}
+            title="CHESS GARDEN"
+            code="PUZZLE_ZONE // 01"
+            description="Pecahkan puzzle catur mini — dua langkah untuk checkmate."
+          />
 
-            <div className="flex items-center gap-2.5 border-b border-white/10 pb-3">
-              <div className="p-2 rounded-lg bg-amber-400/15">
-                <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300" />
-              </div>
-              <div>
-                <h3 className="font-pixel text-[10px] sm:text-[11px] text-amber-200">
-                  NON-IT
-                </h3>
-                <p className="text-[9px] sm:text-[10px] text-emerald-300/50">
-                  Prestasi Bakat & Seni
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-2.5">
-              {nonItAchievements.map((item) => {
-                const IconComponent = item.icon;
-                return (
-                  <div
-                    key={item.id}
-                    style={{ "--accent": item.hex }}
-                    className="bg-emerald-900/40 border border-white/5 rounded-xl p-3 hover:border-[color:var(--accent)]/50 transition-all duration-300"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div
-                        className="p-1.5 rounded-lg shrink-0"
-                        style={{ background: `${item.hex}1A` }}
-                      >
-                        <IconComponent
-                          className="w-4 h-4"
-                          style={{ color: item.hex }}
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-pixel text-[8px] sm:text-[9px] text-emerald-100 truncate">
-                          {item.title}
-                        </h4>
-                        <p className="text-[8px] sm:text-[9px] text-emerald-300/50">
-                          {item.level}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 pt-2 mt-2 border-t border-white/5">
-                      <button
-                        onClick={() =>
-                          setActiveCert({
-                            title: item.title,
-                            badge: item.level,
-                            image: item.certImage,
-                          })
-                        }
-                        className="font-pixel text-[8px] sm:text-[9px] text-amber-300 font-bold hover:underline transition-all"
-                      >
-                        [ CERTIFICATE ]
-                      </button>
-
-                      {item.schoolNewsUrl && (
-                        <a
-                          href={item.schoolNewsUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-pixel text-[7px] sm:text-[8px] text-emerald-300/60 hover:text-amber-300 flex items-center gap-1 transition-colors"
-                        >
-                          DOKUMENTASI
-                          <ExternalLink className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </motion.div>
-
-          {/* COMMITTEES */}
-          <motion.div
-            initial={{ opacity: 0, x: 15 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="relative bg-emerald-950/80 backdrop-blur-sm border border-white/15 rounded-2xl p-4 sm:p-5 space-y-3"
-          >
-            <div className="absolute inset-x-0 top-0 h-[3px] rounded-t-2xl bg-emerald-400/80" />
-
-            <div className="flex items-center gap-2.5 border-b border-white/10 pb-3">
-              <div className="p-2 rounded-lg bg-emerald-400/10">
-                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-300" />
-              </div>
-              <div>
-                <h3 className="font-pixel text-[10px] sm:text-[11px] text-emerald-200">
-                  ORGANIZATION & COMMITTEES
-                </h3>
-                <p className="text-[9px] sm:text-[10px] text-emerald-300/50">
-                  Kepemimpinan & Operasional
-                </p>
-              </div>
-            </div>
-
-            {/* Event Sekolah */}
-            <div className="bg-emerald-900/40 border border-white/5 rounded-xl p-3 space-y-2.5">
-              <div className="flex items-center gap-1.5">
-                <Calendar className="w-3 h-3 text-emerald-400" />
-                <h4 className="font-pixel text-[8px] sm:text-[9px] text-emerald-200">
-                  EVENT SEKOLAH
-                </h4>
-              </div>
-
-              <div className="space-y-2">
-                {committees.map((c) => {
-                  const IconComponent = c.icon;
-                  return (
-                    <div
-                      key={c.title}
-                      className="flex items-start gap-2.5 bg-emerald-900/50 border border-white/5 rounded-lg p-2.5"
-                    >
-                      <div
-                        className="p-1.5 rounded-lg shrink-0"
-                        style={{ background: `${c.hex}1A` }}
-                      >
-                        <IconComponent
-                          className="w-3.5 h-3.5"
-                          style={{ color: c.hex }}
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="font-semibold text-[10px] sm:text-[11px] text-emerald-100">
-                          {c.title}
-                        </span>
-                        <p className="text-[9px] sm:text-[10px] text-emerald-300/60">
-                          {c.desc}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Karang Taruna */}
-            <div className="bg-emerald-900/40 border border-white/5 rounded-xl p-3">
-              <div className="flex items-center gap-1.5 mb-2.5">
-                <Flag className="w-3 h-3 text-amber-300" />
-                <h4 className="font-pixel text-[8px] sm:text-[9px] text-emerald-200">
-                  KARANG TARUNA
-                </h4>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { role: "Wakil Bendahara", icon: Users, hex: "#34D399" },
-                  { role: "Logistik", icon: Flag, hex: "#FBBF24" },
-                  {
-                    role: "Publikasi Dokumentasi",
-                    icon: Calendar,
-                    hex: "#38BDF8",
-                  },
-                ].map((r) => {
-                  const RoleIcon = r.icon;
-                  return (
-                    <div
-                      key={r.role}
-                      className="bg-emerald-900/60 border border-white/5 py-2 px-1.5 rounded-lg text-center space-y-1"
-                    >
-                      <RoleIcon
-                        className="w-3.5 h-3.5 mx-auto"
-                        style={{ color: r.hex }}
-                      />
-                      <span className="font-semibold text-[8px] sm:text-[9px] text-emerald-100 block leading-tight">
-                        {r.role}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </motion.div>
+          <GameCard
+            href="#workbench"
+            delay={0.3}
+            accent="#7dd3a8"
+            icon={<Bug size={18} />}
+            title="CODE WORKBENCH"
+            code="DEBUG_ZONE // 02"
+            description="Drag blok kode yang benar untuk menumbuhkan pohon."
+          />
         </div>
-      </motion.div>
 
-      {/* ===== MODAL EDUCOURSE ===== */}
-      <AnimatePresence>
-        {showEduCourse && (
+        {/* Scroll Indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.6 }}
+          className="mt-9 flex flex-col items-center gap-1.5"
+        >
+          <div className="flex items-center gap-2 font-mono text-[7px] tracking-[0.2em] text-[#5f594f]">
+            <Pickaxe size={11} />
+            <span>PILIH SALAH SATU</span>
+          </div>
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowEduCourse(false)}
-            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4"
+            animate={{ y: [0, 4, 0], opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
           >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-emerald-950/90 backdrop-blur-md border border-white/15 rounded-2xl w-full max-w-2xl p-4 sm:p-6 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] relative space-y-4"
-            >
-              <button
-                onClick={() => setShowEduCourse(false)}
-                className="absolute top-3 right-3 bg-emerald-900/80 text-emerald-200 p-1.5 rounded-lg hover:bg-emerald-800 transition-colors z-10"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              <div className="pr-8">
-                <span className="font-pixel text-[9px] bg-amber-400 text-emerald-950 px-2 py-0.5 rounded-full font-bold">
-                  EDUCOURSE.ID
-                </span>
-                <h3 className="font-pixel text-sm sm:text-base text-amber-200 mt-1.5">
-                  CODING FOR TEENS TRACK
-                </h3>
-                <p className="text-[10px] sm:text-[11px] text-emerald-300/50 mt-1">
-                  Pilih sertifikat untuk melihat:
-                </p>
-              </div>
-
-              <div className="grid sm:grid-cols-3 gap-3">
-                {itCertificates.map((cert) => (
-                  <button
-                    key={cert.id}
-                    onClick={() =>
-                      setActiveCert({
-                        title: cert.title,
-                        badge: cert.badge,
-                        image: cert.image,
-                      })
-                    }
-                    className="group bg-emerald-900/50 border border-white/10 rounded-xl p-3 flex flex-col items-center gap-2 hover:border-amber-300/50 hover:shadow-[0_10px_30px_-14px_rgba(251,191,36,0.5)] transition-all duration-300"
-                  >
-                    <span className="font-pixel text-[7px] sm:text-[8px] text-amber-300 bg-amber-400/15 px-2 py-0.5 rounded-full">
-                      {cert.badge}
-                    </span>
-                    <span className="font-pixel text-[8px] sm:text-[9px] text-amber-100 text-center">
-                      {cert.title}
-                    </span>
-                    <span className="text-[8px] sm:text-[9px] text-emerald-300/50 font-mono">
-                      {cert.date}
-                    </span>
-                    <span className="font-pixel text-[8px] sm:text-[9px] bg-amber-400 text-emerald-950 px-3 py-1.5 rounded-lg font-bold group-hover:bg-amber-300 transition-all">
-                      LIHAT
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </motion.div>
+            <ChevronDown size={13} className="text-[#5f594f]" />
           </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ===== MODAL SERTIFIKAT ===== */}
-      <AnimatePresence>
-        {activeCert && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setActiveCert(null)}
-            className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-3 sm:p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-emerald-900/90 border border-white/20 rounded-2xl p-3 sm:p-5 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] relative space-y-3 inline-block"
-            >
-              <button
-                onClick={() => setActiveCert(null)}
-                className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-emerald-800/80 text-emerald-200 p-1.5 rounded-lg hover:bg-emerald-700 transition-colors z-10"
-              >
-                <X className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-
-              <div className="pr-8">
-                <span className="font-pixel text-[8px] sm:text-[9px] bg-amber-400 text-emerald-950 px-2 py-0.5 rounded-full font-bold inline-block">
-                  {activeCert.badge}
-                </span>
-                <h3 className="font-pixel text-xs sm:text-sm text-amber-200 mt-1.5">
-                  {activeCert.title}
-                </h3>
-              </div>
-
-              <img
-                src={activeCert.image}
-                alt={activeCert.title}
-                className="rounded-lg border border-white/20 max-w-[90vw] sm:max-w-[600px] max-h-[65vh] sm:max-h-[70vh] w-auto h-auto object-contain"
-                style={{ display: "block" }}
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </motion.div>
+      </div>
     </section>
   );
 }

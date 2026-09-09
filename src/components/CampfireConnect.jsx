@@ -913,9 +913,9 @@ export default function CampfireConnect() {
           "
         >
           <span className="h-2 w-2 animate-pulse bg-[#a5ca6d]" />
-          JOURNEY_COMPLETE
+          PERJALANAN SELESAI
           <span className="text-[#526e4b]">•</span>
-          AREA_05
+          TEMPAT BERISTIRAHAT
         </motion.div>
 
         {/* Campfire */}
@@ -972,7 +972,7 @@ export default function CampfireConnect() {
               sm:text-[10px]
             "
           >
-            THE FINAL CAMPFIRE
+            API UNGGUN
           </div>
 
           <h2
@@ -986,8 +986,8 @@ export default function CampfireConnect() {
               md:text-4xl
             "
           >
-            CAMPFIRE
-            <span className="text-[#e4a34b]"> & CONNECT</span>
+            KONTAK
+            <span className="text-[#e4a34b]"> SAYA</span>
           </h2>
 
           <p
@@ -1005,10 +1005,9 @@ export default function CampfireConnect() {
               md:leading-6
             "
           >
-            Terima kasih sudah sampai di akhir perjalanan. Jika kamu tertarik
-            untuk berdiskusi tentang project, kolaborasi, teknologi, atau
-            sekadar ingin menyapa, kamu bisa menemukan saya melalui beberapa
-            jalur di bawah.
+            Terima kasih telah sampai di akhir perjalanan. Jika kamu ingin
+            berdiskusi tentang proyek, berkolaborasi, berbagi ide, atau sekadar
+            menyapa, silakan temukan saya melalui beberapa kanal di bawah
           </p>
         </motion.div>
 
@@ -1081,7 +1080,7 @@ export default function CampfireConnect() {
 
           {/* LinkedIn */}
           <motion.a
-            href="https://www.linkedin.com"
+            href="https://www.linkedin.com/in/airlangga-pangestu"
             target="_blank"
             rel="noreferrer"
             whileHover={{
@@ -1119,7 +1118,7 @@ export default function CampfireConnect() {
 
           {/* Email */}
           <motion.a
-            href="mailto:email@contoh.com"
+            href="mailto:airlanggapangestuu@gmail.com"
             whileHover={{
               y: -5,
               scale: 1.04,
@@ -1156,8 +1155,9 @@ export default function CampfireConnect() {
 
           {/* CV */}
           <motion.a
-            href="/cv.pdf"
-            download
+            href="/CV_Airlangga.pdf"
+            target="_blank"
+            rel="noreferrer"
             whileHover={{
               y: -5,
               scale: 1.04,
@@ -1229,7 +1229,7 @@ export default function CampfireConnect() {
 
             <div className="flex items-center gap-2">
               <TreePine size={11} />
-              <span>THANKS FOR VISITING</span>
+              <span>TERIMA KASIH SUDAH BERKUNJUNG</span>
               <Heart size={10} fill="currentColor" className="text-[#a87575]" />
             </div>
 
@@ -1237,7 +1237,7 @@ export default function CampfireConnect() {
           </div>
 
           <p className="text-[7px] text-[#647762] sm:text-[8px]">
-            © {new Date().getFullYear()} RANGGA • BUILT WITH REACT & TAILWIND
+            © {new Date().getFullYear()} AIRLANGGA PANGESTU
           </p>
         </motion.div>
       </div>

@@ -1,794 +1,630 @@
-import React, { useMemo, useState } from "react";
+import { Chess } from "chess.js";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Swords,
-  Crown,
-  CheckCircle2,
-  RotateCcw,
-  Lightbulb,
-  Heart,
-  HeartCrack,
-  X,
-  Sparkles,
-  Moon,
-  Star,
-} from "lucide-react";
+import { Crown, RotateCcw, Lock, Check, X } from "lucide-react";
 
 /* =========================================================
-   BOARD CONSTANTS
-========================================================= */
+   CHESS PUZZLE
+   MATE IN 3
 
-const FILES = ["a", "b", "c", "d"];
-const RANKS = [4, 3, 2, 1];
-const MAX_ATTEMPTS = 2;
+   FEN:
+   r5rk/5p1p/5R2/4B3/8/8/7P/7K w - - 0 1
 
-/* =========================================================
-   PUZZLE DATA
-========================================================= */
+   Solution:
+   1. Ra6
+      ... f6
+   2. Bxf6
+      ... Rg7
+   3. Rxa8#
+
+   ========================================================= */
 
 const PUZZLE = {
-  title: "The Royal Trap",
-  difficulty: "MATE IN 2",
-  description:
-    "Putih jalan. Kamu bebas bergerak — hasil baru dinilai setelah 2 langkah Putih selesai.",
-  pieces: {
-    a1: { type: "king", color: "white" },
-    b1: { type: "pawn", color: "black" },
-    c1: { type: "rook", color: "white" },
-    b4: { type: "king", color: "black" },
-  },
+  fen: "r5rk/5p1p/5R2/4B3/8/8/7P/7K w - - 0 1",
+
+  solution: [
+    {
+      player: "f6",
+      opponent: "f7",
+    },
+  ],
 };
 
 /* =========================================================
-   PIECE GLYPHS
+   CHESS BOARD
 ========================================================= */
 
-const PIECES = {
-  white: { king: "♔", rook: "♖", pawn: "♙" },
-  black: { king: "♚", rook: "♜", pawn: "♟" },
-};
+function ChessBoard() {
+  const [game, setGame] = useState(() => new Chess(PUZZLE.fen));
 
-/* =========================================================
-   COORDINATE HELPERS
-========================================================= */
+  const [selected, setSelected] = useState(null);
 
-function getCoordinate(square) {
-  return { x: FILES.indexOf(square[0]), y: Number(square[1]) - 1 };
-}
+  const [legalMoves, setLegalMoves] = useState([]);
 
-function getSquare(x, y) {
-  if (x < 0 || x > 3 || y < 0 || y > 3) return null;
-  return `${FILES[x]}${y + 1}`;
-}
+  const [solved, setSolved] = useState(false);
 
-function clonePieces(pieces) {
-  return { ...pieces };
-}
+  const [wrong, setWrong] = useState(false);
 
-function opponentOf(color) {
-  return color === "white" ? "black" : "white";
-}
+  const [status, setStatus] = useState("FIND THE MOVE");
 
-/* =========================================================
-   FIND KING
-========================================================= */
+  const [moveNumber, setMoveNumber] = useState(1);
 
-function findKing(pieces, color) {
-  for (const square of Object.keys(pieces)) {
-    const piece = pieces[square];
-    if (piece && piece.type === "king" && piece.color === color) return square;
-  }
-  return null;
-}
+  const squareName = (row, col) => `${String.fromCharCode(97 + col)}${8 - row}`;
 
-/* =========================================================
-   ATTACK RULES
-========================================================= */
+  /* =======================================================
+     RESET
+  ======================================================= */
 
-function rookAttacks(from, target, pieces) {
-  const start = getCoordinate(from);
-  const end = getCoordinate(target);
-  const dx = end.x - start.x;
-  const dy = end.y - start.y;
-  if (dx !== 0 && dy !== 0) return false;
+  const reset = () => {
+    const newGame = new Chess(PUZZLE.fen);
 
-  const stepX = dx === 0 ? 0 : dx > 0 ? 1 : -1;
-  const stepY = dy === 0 ? 0 : dy > 0 ? 1 : -1;
+    setGame(newGame);
+    setSelected(null);
+    setLegalMoves([]);
+    setSolved(false);
+    setWrong(false);
+    setStatus("FIND THE MOVE");
+    setMoveNumber(1);
+  };
 
-  let x = start.x + stepX;
-  let y = start.y + stepY;
+  /* =======================================================
+     CLEAR SELECTION
+  ======================================================= */
 
-  while (x !== end.x || y !== end.y) {
-    const square = getSquare(x, y);
-    if (pieces[square]) return false;
-    x += stepX;
-    y += stepY;
-  }
-  return true;
-}
+  const clearSelection = () => {
+    setSelected(null);
+    setLegalMoves([]);
+  };
 
-function pawnAttacks(from, target, color) {
-  const start = getCoordinate(from);
-  const end = getCoordinate(target);
-  const direction = color === "white" ? 1 : -1;
-  return end.y - start.y === direction && Math.abs(end.x - start.x) === 1;
-}
+  /* =======================================================
+     SELECT PIECE
+  ======================================================= */
 
-function kingAttacks(from, target) {
-  const start = getCoordinate(from);
-  const end = getCoordinate(target);
-  return (
-    Math.abs(end.x - start.x) <= 1 &&
-    Math.abs(end.y - start.y) <= 1 &&
-    !(end.x === start.x && end.y === start.y)
-  );
-}
+  const selectPiece = (square) => {
+    const piece = game.get(square);
 
-function isSquareAttacked(square, byColor, pieces) {
-  for (const from of Object.keys(pieces)) {
-    const piece = pieces[from];
-    if (!piece || piece.color !== byColor) continue;
-
-    if (piece.type === "rook" && rookAttacks(from, square, pieces)) return true;
-    if (piece.type === "pawn" && pawnAttacks(from, square, piece.color))
-      return true;
-    if (piece.type === "king" && kingAttacks(from, square)) return true;
-  }
-  return false;
-}
-
-function isInCheck(pieces, color) {
-  const kingSquare = findKing(pieces, color);
-  if (!kingSquare) return true;
-  return isSquareAttacked(kingSquare, opponentOf(color), pieces);
-}
-
-/* =========================================================
-   LEGAL DESTINATIONS PER PIECE
-========================================================= */
-
-function getRookMoves(square, pieces, color) {
-  const result = [];
-  const { x, y } = getCoordinate(square);
-  const directions = [
-    [1, 0],
-    [-1, 0],
-    [0, 1],
-    [0, -1],
-  ];
-
-  for (const [dx, dy] of directions) {
-    let nx = x + dx;
-    let ny = y + dy;
-
-    while (true) {
-      const target = getSquare(nx, ny);
-      if (!target) break;
-
-      const targetPiece = pieces[target];
-      if (!targetPiece) {
-        result.push(target);
-      } else {
-        if (targetPiece.color !== color && targetPiece.type !== "king") {
-          result.push(target);
-        }
-        break;
-      }
-      nx += dx;
-      ny += dy;
+    if (!piece) {
+      return;
     }
-  }
-  return result;
-}
 
-function getKingMoves(square, pieces, color) {
-  const result = [];
-  const { x, y } = getCoordinate(square);
-
-  for (let dx = -1; dx <= 1; dx++) {
-    for (let dy = -1; dy <= 1; dy++) {
-      if (dx === 0 && dy === 0) continue;
-
-      const target = getSquare(x + dx, y + dy);
-      if (!target) continue;
-
-      const targetPiece = pieces[target];
-      if (targetPiece && targetPiece.type === "king") continue;
-      if (targetPiece && targetPiece.color === color) continue;
-
-      const simulated = clonePieces(pieces);
-      delete simulated[square];
-      simulated[target] = { type: "king", color };
-
-      if (!isInCheck(simulated, color)) result.push(target);
+    // Puzzle dimainkan oleh putih
+    if (piece.color !== "w") {
+      return;
     }
-  }
-  return result;
-}
 
-function getPawnMoves(square, pieces, color) {
-  const result = [];
-  const { x, y } = getCoordinate(square);
-  const direction = color === "white" ? 1 : -1;
+    if (game.turn() !== "w") {
+      return;
+    }
 
-  const forward = getSquare(x, y + direction);
-  if (forward && !pieces[forward]) result.push(forward);
+    const moves = game.moves({
+      square,
+      verbose: true,
+    });
 
-  for (const dx of [-1, 1]) {
-    const target = getSquare(x + dx, y + direction);
-    if (!target) continue;
-    const targetPiece = pieces[target];
+    if (moves.length === 0) {
+      return;
+    }
+
+    setSelected(square);
+    setLegalMoves(moves);
+    setWrong(false);
+  };
+
+  /* =======================================================
+     CHECK PLAYER MOVE
+  ======================================================= */
+
+  const handleMove = (sourceSquare, targetSquare) => {
+    if (solved) {
+      return;
+    }
+
+    if (game.turn() !== "w") {
+      return;
+    }
+
+    /*
+      Puzzle solution:
+
+      1. Rf6-a6
+      2. Be5xf6
+      3. Ra6xa8#
+    */
+
+    const solutionMoves = [
+      {
+        from: "f6",
+        to: "a6",
+      },
+      {
+        from: "e5",
+        to: "f6",
+      },
+      {
+        from: "a6",
+        to: "a8",
+      },
+    ];
+
+    const expected = solutionMoves[moveNumber - 1];
+
+    console.log("PLAYER MOVE:", sourceSquare, "->", targetSquare);
+
+    console.log("EXPECTED:", expected);
+
+    // =========================================
+    // WRONG MOVE
+    // =========================================
+
     if (
-      targetPiece &&
-      targetPiece.color !== color &&
-      targetPiece.type !== "king"
+      !expected ||
+      sourceSquare !== expected.from ||
+      targetSquare !== expected.to
     ) {
-      result.push(target);
+      setWrong(true);
+      setStatus("WRONG MOVE");
+
+      setTimeout(() => {
+        setWrong(false);
+        setStatus(`FIND MOVE ${moveNumber}`);
+      }, 1000);
+
+      return;
     }
-  }
-  return result;
-}
 
-function getPseudoLegalMoves(square, pieces) {
-  const piece = pieces[square];
-  if (!piece) return [];
-  if (piece.type === "rook") return getRookMoves(square, pieces, piece.color);
-  if (piece.type === "king") return getKingMoves(square, pieces, piece.color);
-  if (piece.type === "pawn") return getPawnMoves(square, pieces, piece.color);
-  return [];
-}
+    // =========================================
+    // VALIDATE WITH CHESS.JS
+    // =========================================
 
-function applyMove(pieces, from, to) {
-  const next = clonePieces(pieces);
-  const movingPiece = next[from];
-  delete next[from];
-  delete next[to];
-  next[to] = movingPiece;
-  return next;
-}
+    const newGame = new Chess(game.fen());
 
-function isLegalMove(pieces, from, to, color) {
-  const piece = pieces[from];
-  if (!piece || piece.color !== color) return false;
+    try {
+      const move = newGame.move({
+        from: sourceSquare,
+        to: targetSquare,
+        promotion: "q",
+      });
 
-  const destinations = getPseudoLegalMoves(from, pieces);
-  if (!destinations.includes(to)) return false;
+      if (!move) {
+        return;
+      }
 
-  const next = applyMove(pieces, from, to);
-  if (isInCheck(next, color)) return false;
+      // =======================================
+      // THIRD MOVE = CHECKMATE
+      // =======================================
 
-  return true;
-}
+      if (moveNumber === 3) {
+        if (newGame.isCheckmate()) {
+          setGame(newGame);
+          setSolved(true);
+          setStatus("CHECKMATE // SOLVED");
 
-function getAllLegalMoves(pieces, color) {
-  const result = [];
-  for (const from of Object.keys(pieces)) {
-    const piece = pieces[from];
-    if (!piece || piece.color !== color) continue;
+          clearSelection();
 
-    for (const to of getPseudoLegalMoves(from, pieces)) {
-      if (isLegalMove(pieces, from, to, color)) result.push({ from, to });
+          return;
+        }
+      }
+
+      // =======================================
+      // UPDATE PLAYER POSITION
+      // =======================================
+
+      setGame(newGame);
+      clearSelection();
+
+      // =======================================
+      // OPPONENT RESPONSE
+      // =======================================
+
+      setStatus("OPPONENT MOVING...");
+
+      setTimeout(() => {
+        makeOpponentMove(newGame, moveNumber);
+      }, 450);
+    } catch (error) {
+      console.error("Chess error:", error);
     }
+  };
+
+  /* =======================================================
+     OPPONENT MOVE
+  ======================================================= */
+
+  const makeOpponentMove = (currentGame, currentMove) => {
+    const aiGame = new Chess(currentGame.fen());
+
+    /*
+      Setelah:
+
+      1. Ra6
+
+      Black:
+      ...f6
+    */
+
+    let opponentMove;
+
+    if (currentMove === 1) {
+      opponentMove = {
+        from: "f7",
+        to: "f6",
+      };
+    }
+
+    /*
+      Setelah:
+
+      2. Bxf6
+
+      Black:
+      ...Rg7
+    */
+
+    if (currentMove === 2) {
+      opponentMove = {
+        from: "g8",
+        to: "g7",
+      };
+    }
+
+    if (!opponentMove) {
+      return;
+    }
+
+    try {
+      const move = aiGame.move(opponentMove);
+
+      if (!move) {
+        console.error("Opponent move invalid");
+
+        return;
+      }
+
+      setGame(aiGame);
+
+      setMoveNumber(currentMove + 1);
+
+      setStatus(`FIND MOVE ${currentMove + 1}`);
+    } catch (error) {
+      console.error("Opponent error:", error);
+    }
+  };
+
+  /* =======================================================
+     CLICK SQUARE
+  ======================================================= */
+
+  const handleSquare = (row, col) => {
+    if (solved) {
+      return;
+    }
+
+    const square = squareName(row, col);
+
+    console.log("SQUARE CLICK:", square);
+
+    // =========================================
+    // BELUM MEMILIH BIDAK
+    // =========================================
+
+    if (!selected) {
+      selectPiece(square);
+      return;
+    }
+
+    // =========================================
+    // KLIK BIDAK PUTIH LAIN
+    // =========================================
+
+    const clickedPiece = game.get(square);
+
+    if (clickedPiece && clickedPiece.color === "w") {
+      selectPiece(square);
+      return;
+    }
+
+    // =========================================
+    // CEK LEGAL MOVE
+    // =========================================
+
+    const legal = legalMoves.some((move) => move.to === square);
+
+    if (!legal) {
+      clearSelection();
+      return;
+    }
+
+    // =========================================
+    // EXECUTE PUZZLE MOVE
+    // =========================================
+
+    const sourceSquare = selected;
+
+    handleMove(sourceSquare, square);
+  };
+
+  /* =======================================================
+     DRAG & DROP
+  ======================================================= */
+
+  const handleDragMove = (sourceSquare, targetSquare) => {
+    if (solved) {
+      return false;
+    }
+
+    const legal = legalMoves.some((move) => move.to === targetSquare);
+
+    /*
+      Kalau belum memilih bidak melalui click,
+      kita tetap izinkan drag.
+    */
+
+    handleMove(sourceSquare, targetSquare);
+
+    clearSelection();
+
+    return legal;
+  };
+
+  /* =======================================================
+     SQUARE STYLES
+  ======================================================= */
+
+  const squareStyles = {};
+
+  // Selected square
+  if (selected) {
+    squareStyles[selected] = {
+      backgroundColor: "rgba(196,181,253,0.45)",
+
+      boxShadow: "inset 0 0 0 3px #c4b5fd",
+    };
   }
-  return result;
-}
 
-function isCheckmate(pieces, color) {
-  return (
-    isInCheck(pieces, color) && getAllLegalMoves(pieces, color).length === 0
-  );
-}
+  // Legal moves
+  legalMoves.forEach((move) => {
+    const targetPiece = game.get(move.to);
 
-function isStalemate(pieces, color) {
-  return (
-    !isInCheck(pieces, color) && getAllLegalMoves(pieces, color).length === 0
-  );
-}
+    // Normal move
+    if (!targetPiece) {
+      squareStyles[move.to] = {
+        background:
+          "radial-gradient(circle, rgba(196,181,253,0.75) 0%, rgba(196,181,253,0.75) 16%, transparent 18%)",
+      };
+    }
 
-function findMatingMove(pieces, color) {
-  for (const move of getAllLegalMoves(pieces, color)) {
-    const next = applyMove(pieces, move.from, move.to);
-    if (isCheckmate(next, opponentOf(color))) return move;
-  }
-  return null;
-}
-
-function chooseBlackReply(pieces) {
-  const replies = getAllLegalMoves(pieces, "black");
-  if (replies.length === 0) return null;
-
-  const saferReply = replies.find((reply) => {
-    const after = applyMove(pieces, reply.from, reply.to);
-    return !findMatingMove(after, "white");
+    // Capture
+    else {
+      squareStyles[move.to] = {
+        boxShadow: "inset 0 0 0 4px rgba(196,181,253,0.8)",
+      };
+    }
   });
 
-  return saferReply || replies[0];
-}
-
-/* =========================================================
-   BOARD LAYOUT
-========================================================= */
-
-function createBoard(pieces) {
-  const board = [];
-  for (const rank of RANKS) {
-    for (const file of FILES) {
-      const square = `${file}${rank}`;
-      board.push({ square, piece: pieces[square] || null });
-    }
-  }
-  return board;
-}
-
-/* =========================================================
-   DEKORASI PIXEL FANTASY
-========================================================= */
-
-function FloatingStars() {
-  const stars = useMemo(
-    () =>
-      Array.from({ length: 12 }, () => ({
-        top: Math.random() * 80,
-        left: Math.random() * 100,
-        delay: Math.random() * 4,
-        size: 3 + Math.random() * 5,
-      })),
-    [],
-  );
-
-  return (
-    <>
-      {stars.map((s, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full pointer-events-none"
-          style={{
-            top: `${s.top}%`,
-            left: `${s.left}%`,
-            width: s.size,
-            height: s.size,
-            background: "#fbbf24",
-            boxShadow: "0 0 8px 2px rgba(251,191,36,0.4)",
-            zIndex: 1,
-          }}
-          animate={{ opacity: [0.2, 0.9, 0.2] }}
-          transition={{ duration: 2 + i, repeat: Infinity, delay: s.delay }}
-        />
-      ))}
-    </>
-  );
-}
-
-function PixelSparkles({ top, left, delay = 0 }) {
-  return (
-    <motion.div
-      className="absolute pointer-events-none z-0"
-      style={{ top, left }}
-      animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 0.5] }}
-      transition={{ duration: 3, repeat: Infinity, delay }}
-    >
-      <Sparkles className="w-5 h-5 text-purple-300/40" />
-    </motion.div>
-  );
-}
-
-export default function ChessGarden() {
-  const [pieces, setPieces] = useState(() => clonePieces(PUZZLE.pieces));
-  const [selectedSquare, setSelectedSquare] = useState(null);
-  const [legalMoves, setLegalMoves] = useState([]);
-  const [turn, setTurn] = useState("white");
-  const [moveNumber, setMoveNumber] = useState(1);
-  const [thinking, setThinking] = useState(false);
-  const [solved, setSolved] = useState(false);
-  const [failedAttempts, setFailedAttempts] = useState(0);
-  const [showHint, setShowHint] = useState(false);
-  const [message, setMessage] = useState(
-    "Giliran Putih — pilih bidak untuk digerakkan",
-  );
-  const [lastMove, setLastMove] = useState(null);
-  const [popup, setPopup] = useState(null);
-
-  const board = useMemo(() => createBoard(pieces), [pieces]);
-  const attemptsLeft = MAX_ATTEMPTS - failedAttempts;
-
-  const blackInCheck = isInCheck(pieces, "black");
-  const whiteInCheck = isInCheck(pieces, "white");
-
-  /* ============ RESET HELPERS ============ */
-
-  const resetBoard = () => {
-    setPieces(clonePieces(PUZZLE.pieces));
-    setSelectedSquare(null);
-    setLegalMoves([]);
-    setTurn("white");
-    setMoveNumber(1);
-    setThinking(false);
-    setLastMove(null);
-  };
-
-  const resetPuzzleCompletely = () => {
-    resetBoard();
-    setSolved(false);
-    setFailedAttempts(0);
-    setShowHint(false);
-    setPopup(null);
-    setMessage("Giliran Putih — pilih bidak untuk digerakkan");
-  };
-
-  const failAttempt = (reason) => {
-    const next = failedAttempts + 1;
-
-    if (next >= MAX_ATTEMPTS) {
-      setPopup({
-        type: "fail",
-        text: `${reason} Sudah ${MAX_ATTEMPTS}x percobaan — puzzle diulang total.`,
-      });
-      setTimeout(() => resetPuzzleCompletely(), 2000);
-      return;
-    }
-
-    setFailedAttempts(next);
-    resetBoard();
-    setPopup({
-      type: "fail",
-      text: `${reason} Papan direset, sisa ${MAX_ATTEMPTS - next} percobaan.`,
-    });
-    setTimeout(() => setPopup(null), 2000);
-  };
-
-  /* ============ BLACK AUTO-REPLY ============ */
-
-  const playBlackReply = (afterFirstMove) => {
-    setThinking(true);
-    setTurn("black");
-    setMessage("Hitam sedang berpikir...");
-
-    setTimeout(() => {
-      const reply = chooseBlackReply(afterFirstMove);
-
-      if (!reply) {
-        setThinking(false);
-        failAttempt("🤝 Stalemate — bukan checkmate.");
-        return;
-      }
-
-      const afterReply = applyMove(afterFirstMove, reply.from, reply.to);
-      setPieces(afterReply);
-      setLastMove(reply);
-      setThinking(false);
-
-      if (isCheckmate(afterReply, "white")) {
-        failAttempt("😵 Raja Putih malah terjebak.");
-        return;
-      }
-
-      setMoveNumber(2);
-      setTurn("white");
-      setMessage("Giliran kamu — langkah ke-2. Buat checkmate!");
-    }, 650);
-  };
-
-  /* ============ SQUARE CLICK ============ */
-
-  const handleSquareClick = (square) => {
-    if (solved || thinking || turn !== "white") return;
-
-    const clickedPiece = pieces[square];
-
-    if (!selectedSquare) {
-      if (!clickedPiece || clickedPiece.color !== "white") return;
-
-      const destinations = getAllLegalMoves(pieces, "white")
-        .filter((move) => move.from === square)
-        .map((move) => move.to);
-
-      setSelectedSquare(square);
-      setLegalMoves(destinations);
-      setMessage(
-        destinations.length
-          ? "Pilih kotak tujuan yang ditandai"
-          : "Bidak ini tidak punya langkah legal.",
-      );
-      return;
-    }
-
-    if (clickedPiece && clickedPiece.color === "white") {
-      const destinations = getAllLegalMoves(pieces, "white")
-        .filter((move) => move.from === square)
-        .map((move) => move.to);
-
-      setSelectedSquare(square);
-      setLegalMoves(destinations);
-      return;
-    }
-
-    if (!legalMoves.includes(square)) {
-      setMessage("❌ Langkah itu tidak legal untuk bidak ini.");
-      return;
-    }
-
-    const from = selectedSquare;
-    const to = square;
-    const nextPosition = applyMove(pieces, from, to);
-
-    setPieces(nextPosition);
-    setSelectedSquare(null);
-    setLegalMoves([]);
-    setLastMove({ from, to });
-
-    if (moveNumber === 1) {
-      if (isCheckmate(nextPosition, "black")) {
-        setSolved(true);
-        setPopup({
-          type: "win",
-          text: "CHECKMATE! Puzzle solved dalam 1 langkah!",
-        });
-        return;
-      }
-
-      if (isStalemate(nextPosition, "black")) {
-        failAttempt("🤝 Stalemate — bukan checkmate.");
-        return;
-      }
-
-      playBlackReply(nextPosition);
-      return;
-    }
-
-    if (isCheckmate(nextPosition, "black")) {
-      setSolved(true);
-      setPopup({ type: "win", text: "CHECKMATE! Puzzle solved!" });
-    } else {
-      failAttempt("⏱️ Dua langkah selesai, belum checkmate.");
-    }
-  };
-
-  /* ============ RENDER ============ */
+  /* =======================================================
+     RENDER
+  ======================================================= */
 
   return (
     <section
       id="chess"
-      className="relative py-14 sm:py-16 px-4 sm:px-6 lg:px-8 text-white overflow-hidden"
+      className="relative min-h-screen px-4 sm:px-6 lg:px-8 text-white overflow-hidden flex items-center justify-center py-20"
       style={{
         background:
-          "linear-gradient(180deg, #0f0a1e 0%, #1a0f2e 25%, #1e1b3a 50%, #1a0f2e 75%, #0f0a1e 100%)",
+          "linear-gradient(180deg, #12100e 0%, #1a1512 25%, #26221e 50%, #1a1512 75%, #0d0b09 100%)",
       }}
     >
-      {/* ===== DEKORASI FANTASY ===== */}
-      <div className="absolute inset-0 z-0">
-        {/* Pattern pixel */}
-        <div
-          className="absolute inset-0 opacity-[0.05]"
-          style={{
-            backgroundImage: "radial-gradient(#8b5cf6 1px, transparent 1px)",
-            backgroundSize: "18px 18px",
+      <div className="relative mx-auto w-full max-w-[430px]">
+        {/* Glow */}
+
+        <motion.div
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[80%] w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#a78bfa]/10 blur-[70px]"
+          animate={{
+            opacity: solved ? [0.3, 0.9, 0.3] : [0.25, 0.45, 0.25],
+
+            scale: solved ? [1, 1.12, 1] : [1, 1.04, 1],
+          }}
+          transition={{
+            duration: solved ? 1.3 : 4,
+            repeat: Infinity,
           }}
         />
 
-        {/* Moon */}
-        <Moon className="absolute top-6 right-8 w-6 h-6 text-purple-300/40" />
+        {/* Board frame */}
 
-        {/* Sparkles */}
-        <PixelSparkles top="15%" left="10%" />
-        <PixelSparkles top="30%" left="80%" delay={1} />
-        <PixelSparkles top="50%" left="15%" delay={2} />
-        <PixelSparkles top="65%" left="85%" delay={0.5} />
+        <div className="relative border-[4px] border-[#786b59] bg-[#100e0c] p-3 shadow-[7px_7px_0_#080706]">
+          {/* Header */}
 
-        {/* Stars */}
-        <FloatingStars />
-      </div>
+          <div className="mb-3 flex items-center justify-between border-b-2 border-[#302b25] pb-2">
+            <div className="flex items-center gap-2">
+              <Crown size={15} className="text-[#c4b5fd]" />
 
-      <div className="relative z-10 max-w-3xl mx-auto">
-        {/* HEADER */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-5"
-        >
-          <h2 className="text-base sm:text-lg font-pixel text-purple-300 inline-flex items-center gap-2 bg-purple-950/60 border border-purple-700/60 rounded-lg px-4 py-2.5">
-            <Swords className="w-4 h-4 text-amber-300" />
-            CHESS GARDEN
-          </h2>
-        </motion.div>
-
-        {/* INFO BAR */}
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <span className="font-pixel text-[8px] text-amber-300 bg-purple-950/60 border border-purple-700/60 rounded-lg px-3 py-1.5 flex items-center gap-1.5">
-            <Crown className="w-3 h-3 text-amber-300" />
-            {PUZZLE.difficulty}
-          </span>
-          <span className="flex items-center gap-1 bg-purple-950/60 border border-purple-700/60 rounded-lg px-3 py-1.5">
-            {Array.from({ length: MAX_ATTEMPTS }).map((_, i) => (
-              <span key={i}>
-                {i < attemptsLeft ? (
-                  <Heart className="w-3 h-3 text-pink-400 fill-pink-400/70" />
-                ) : (
-                  <HeartCrack className="w-3 h-3 text-red-500/70" />
-                )}
+              <span className="font-pixel text-[8px] text-[#c4b5fd]">
+                PUZZLE 01 // MATE IN 3
               </span>
-            ))}
-          </span>
-        </div>
-
-        {/* PAPAN CATUR */}
-        <div className="flex flex-col items-center">
-          <div className="relative w-full max-w-[360px]">
-            {/* Meja fantasy */}
-            <div className="bg-purple-950 border-4 border-purple-800 rounded-xl p-2.5 shadow-[0_0_40px_-5px_rgba(139,92,246,0.3)]">
-              <div className="grid grid-cols-4 grid-rows-4 w-full aspect-square overflow-hidden rounded-md border-2 border-purple-800 relative">
-                {board.map(({ square, piece }, index) => {
-                  const row = Math.floor(index / 4);
-                  const col = index % 4;
-                  const isDark = (row + col) % 2 === 1;
-                  const isSelected = selectedSquare === square;
-                  const isLegal = legalMoves.includes(square);
-                  const isKingInCheck =
-                    piece?.type === "king" &&
-                    (piece.color === "black" ? blackInCheck : whiteInCheck);
-                  const isLastMoveSquare =
-                    lastMove &&
-                    (lastMove.from === square || lastMove.to === square);
-
-                  return (
-                    <button
-                      key={square}
-                      type="button"
-                      onClick={() => handleSquareClick(square)}
-                      className={`
-                        relative w-full h-full flex items-center justify-center
-                        select-none transition-colors duration-150
-                        ${isDark ? "bg-purple-800" : "bg-purple-200"}
-                        ${isSelected ? "ring-4 ring-inset ring-amber-400" : ""}
-                        hover:brightness-110
-                      `}
-                    >
-                      {isLastMoveSquare && !isSelected && (
-                        <span className="absolute inset-0 bg-amber-300/20" />
-                      )}
-
-                      {isKingInCheck && (
-                        <span className="absolute inset-0 bg-red-500/40 animate-pulse" />
-                      )}
-
-                      {isLegal && !piece && (
-                        <span className="absolute w-2.5 h-2.5 rounded-full bg-purple-950/60 z-20" />
-                      )}
-
-                      {isLegal && piece && (
-                        <span className="absolute inset-1 rounded-full border-4 border-amber-500/70 z-20 pointer-events-none" />
-                      )}
-
-                      {piece && <ChessPiece piece={piece} />}
-                    </button>
-                  );
-                })}
-
-                {/* POPUP OVERLAY */}
-                <AnimatePresence>
-                  {popup && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{ duration: 0.3 }}
-                      className="absolute inset-0 z-30 flex items-center justify-center bg-black/60 backdrop-blur-sm"
-                    >
-                      <motion.div
-                        initial={{ y: 10 }}
-                        animate={{ y: 0 }}
-                        className={`mx-3 p-4 rounded-xl border-2 text-center ${
-                          popup.type === "win"
-                            ? "bg-purple-950/95 border-amber-400"
-                            : "bg-red-950/95 border-red-400"
-                        }`}
-                      >
-                        {popup.type === "win" ? (
-                          <>
-                            <CheckCircle2 className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-                            <p className="font-pixel text-[10px] text-amber-300">
-                              CHECKMATE!
-                            </p>
-                            <p className="text-[9px] text-purple-200/70 mt-1">
-                              Puzzle berhasil diselesaikan!
-                            </p>
-                          </>
-                        ) : (
-                          <>
-                            <X className="w-8 h-8 text-red-400 mx-auto mb-2" />
-                            <p className="font-pixel text-[10px] text-red-300">
-                              GAGAL!
-                            </p>
-                            <p className="text-[9px] text-red-200/70 mt-1">
-                              {popup.text}
-                            </p>
-                          </>
-                        )}
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
             </div>
-          </div>
 
-          {/* STATUS TEXT */}
-          <p className="text-[9px] sm:text-[10px] text-purple-300/70 font-mono mt-3 text-center">
-            {message}
-          </p>
-
-          {/* TOMBOL AKSI */}
-          <div className="flex items-center gap-2 mt-3">
             <button
-              type="button"
-              onClick={() => setShowHint((v) => !v)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-purple-700 bg-purple-950/60 text-purple-300 font-pixel text-[8px] hover:text-amber-300 transition"
+              onClick={reset}
+              className="flex items-center gap-1 font-mono text-[8px] text-[#71695e] transition-colors hover:text-[#c4b5fd]"
             >
-              <Lightbulb className="w-3.5 h-3.5" />
-              HINT
-            </button>
-            <button
-              type="button"
-              onClick={() => resetPuzzleCompletely()}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border-2 border-amber-500 bg-purple-950/60 text-amber-300 font-pixel text-[8px] hover:bg-purple-900 transition"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              {solved ? "MAIN LAGI" : "RESET"}
+              <RotateCcw size={11} />
+              RESET
             </button>
           </div>
 
-          {/* HINT TEXT */}
-          <AnimatePresence>
-            {showHint && !solved && (
-              <motion.p
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 5 }}
-                className="text-[9px] text-purple-200/70 mt-2 text-center max-w-sm"
-              >
-                Pikirkan bagaimana Raja Putih bisa membuka jalur untuk Benteng,
-                sambil membatasi ke mana Raja Hitam bisa lari.
-              </motion.p>
+          {/* Board */}
+
+          <div className="grid grid-cols-8 border-2 border-[#4d453b]">
+            {Array.from({
+              length: 8,
+            }).map((_, rowIndex) =>
+              Array.from({
+                length: 8,
+              }).map((_, colIndex) => {
+                const square = squareName(rowIndex, colIndex);
+
+                const piece = game.get(square);
+
+                const isDark = (rowIndex + colIndex) % 2 === 1;
+
+                const isSelected = selected === square;
+
+                const style = squareStyles[square];
+
+                return (
+                  <button
+                    key={square}
+                    onClick={() => handleSquare(rowIndex, colIndex)}
+                    className={`
+                      relative aspect-square
+                      flex items-center justify-center
+                      border-0
+                      text-xl
+                      transition-all
+                      sm:text-2xl
+                      ${isDark ? "bg-[#30283b]" : "bg-[#554964]"}
+                    `}
+                    style={{
+                      ...style,
+
+                      boxShadow: isSelected
+                        ? "inset 0 0 0 3px #c4b5fd"
+                        : style?.boxShadow,
+                    }}
+                  >
+                    {/* Coordinates */}
+
+                    {colIndex === 0 && (
+                      <span className="absolute left-1 top-0.5 font-mono text-[6px] text-[#a69aa9]">
+                        {8 - rowIndex}
+                      </span>
+                    )}
+
+                    {rowIndex === 7 && (
+                      <span className="absolute bottom-0.5 right-1 font-mono text-[6px] text-[#a69aa9]">
+                        {String.fromCharCode(97 + colIndex)}
+                      </span>
+                    )}
+
+                    {/* Piece */}
+
+                    {piece && (
+                      <motion.span
+                        animate={{
+                          y: [0, -1, 0],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                        className={
+                          piece.color === "w"
+                            ? "text-[#f4e9d2] drop-shadow-[2px_2px_0_#16121a]"
+                            : "text-[#c4b5fd] drop-shadow-[2px_2px_0_#16121a]"
+                        }
+                      >
+                        {getPieceSymbol(piece)}
+                      </motion.span>
+                    )}
+                  </button>
+                );
+              }),
             )}
-          </AnimatePresence>
+          </div>
+
+          {/* Status */}
+
+          <div className="mt-3 flex items-center justify-between border-t-2 border-[#302b25] pt-3">
+            <div className="flex items-center gap-2">
+              {solved ? (
+                <>
+                  <Check size={13} className="text-[#7dd3a8]" />
+
+                  <span className="font-mono text-[8px] text-[#7dd3a8]">
+                    CHECKMATE // SOLVED
+                  </span>
+                </>
+              ) : wrong ? (
+                <>
+                  <X size={13} className="text-red-400" />
+
+                  <span className="font-mono text-[8px] text-red-400">
+                    WRONG MOVE
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Lock size={12} className="text-[#776e63]" />
+
+                  <span className="font-mono text-[8px] text-[#776e63]">
+                    {status}
+                  </span>
+                </>
+              )}
+            </div>
+
+            <span className="font-mono text-[7px] text-[#5e574e]">
+              {selected || "--"}
+            </span>
+          </div>
         </div>
+
+        {/* Solved */}
+
+        <AnimatePresence>
+          {solved && (
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: 10,
+                scale: 0.95,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                scale: 1,
+              }}
+              className="absolute -bottom-14 left-1/2 -translate-x-1/2 border-2 border-[#7dd3a8] bg-[#101713] px-4 py-2 shadow-[4px_4px_0_#070908]"
+            >
+              <p className="whitespace-nowrap font-pixel text-[8px] text-[#7dd3a8]">
+                PATH UNLOCKED
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );
 }
 
 /* =========================================================
-   CHESS PIECE — fantasy styled glyph
+   PIECE SYMBOL
 ========================================================= */
 
-function ChessPiece({ piece }) {
-  const isWhite = piece.color === "white";
+function getPieceSymbol(piece) {
+  const pieces = {
+    wk: "♔",
+    wq: "♕",
+    wr: "♖",
+    wb: "♗",
+    wn: "♘",
+    wp: "♙",
 
-  return (
-    <span className="relative z-10 flex items-center justify-center w-[78%] h-[78%]">
-      <span
-        className={`absolute inset-0 rounded-full ${
-          isWhite
-            ? "bg-gradient-to-b from-white to-gray-300"
-            : "bg-gradient-to-b from-purple-900 to-black"
-        }`}
-        style={{
-          boxShadow: isWhite
-            ? "inset 0 -3px 5px rgba(0,0,0,0.3), inset 0 2px 3px rgba(255,255,255,0.9), 0 3px 4px rgba(0,0,0,0.35)"
-            : "inset 0 -3px 5px rgba(0,0,0,0.7), inset 0 2px 3px rgba(255,255,255,0.15), 0 3px 4px rgba(0,0,0,0.55)",
-        }}
-      />
-      <span
-        className={`relative leading-none select-none text-[clamp(28px,7vw,48px)] ${
-          isWhite ? "text-white" : "text-purple-950"
-        }`}
-        style={{
-          WebkitTextStroke: isWhite ? "1.5px #6b7280" : "1.5px #a78bfa",
-          filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.45))",
-        }}
-      >
-        {PIECES[piece.color][piece.type]}
-      </span>
-    </span>
-  );
+    bk: "♚",
+    bq: "♛",
+    br: "♜",
+    bb: "♝",
+    bn: "♞",
+    bp: "♟",
+  };
+
+  return pieces[`${piece.color}${piece.type}`] || "";
 }
+
+/* =========================================================
+   DEFAULT EXPORT
+========================================================= */
+
+export default ChessBoard;

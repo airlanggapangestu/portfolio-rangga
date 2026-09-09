@@ -59,7 +59,7 @@ const aiCertificate = {
   title: "AI Ready ASEAN",
   fullTitle: "Certificate of Completion",
   issuer: "ASEAN Foundation x Google.org",
-  date: "12 Agustus 2026",
+  date: "12 August 2026",
   badge: "AI READY",
   image: "/certs/ai-ready-asean.jpeg",
   description:
@@ -69,8 +69,8 @@ const aiCertificate = {
 const nonItAchievements = [
   {
     id: "comedy",
-    title: "Stand Up Comedy",
-    level: "Tingkat Sekolah",
+    title: "Lomba Stand Up Comedy",
+    level: "Pencapaian Tingkat Sekolah",
     icon: Laugh,
     hex: "#FBBF24",
     schoolNewsUrl:
@@ -79,7 +79,15 @@ const nonItAchievements = [
   {
     id: "chess",
     title: "Lomba Catur",
-    level: "Tingkat Sekolah",
+    level: "Pencapaian Tingkat Sekolah",
+    icon: Award,
+    hex: "#F59E0B",
+    schoolNewsUrl: null,
+  },
+  {
+    id: "angklung",
+    title: "Lomba Angklung",
+    level: "Pencapaian Tingkat Daerah",
     icon: Award,
     hex: "#F59E0B",
     schoolNewsUrl: null,
@@ -88,20 +96,20 @@ const nonItAchievements = [
 
 const committees = [
   {
-    title: "Ketua Acara — PORSENI",
-    desc: "Mengatur konsep, rundown, dan eksekusi acara.",
+    title: "Devisi Acara — Pekan Olahraga dan Seni",
+    desc: "Mengatur konsep, rangkaian acara, dan koordinasi tim.",
     icon: Users,
     hex: "#34D399",
   },
   {
-    title: "Wakil Ketua Acara — Event 17 Agustus",
-    desc: "Koordinasi teknis antardivisi perlombaan.",
+    title: "Devisi Acara — Perayaan 17 Agustus",
+    desc: "Mengoordinasikan kegiatan dan komunikasi antarbagian.",
     icon: Calendar,
     hex: "#FBBF24",
   },
   {
-    title: "Seksi Logistik — PORAK",
-    desc: "Pengadaan alat perlombaan & setup tempat.",
+    title: "Devisi Logistik — Pekan Olahraga Antar Kelas",
+    desc: "Mengelola perlengkapan dan kebutuhan teknis acara.",
     icon: Flag,
     hex: "#38BDF8",
   },
@@ -968,7 +976,9 @@ const CertificateCard = ({
       <div className="mt-2 flex items-center justify-between border-t border-[#b5d4c0] pt-2">
         <span className="font-mono text-[8px] text-[#587566]">{date}</span>
 
-        <span className="font-mono text-[8px] text-[#376249]">VIEW_CERT →</span>
+        <span className="font-mono text-[8px] text-[#376249]">
+          LIHAT SERTIFIKAT →
+        </span>
       </div>
     </motion.button>
   );
@@ -999,6 +1009,7 @@ export default function LifeStory() {
 
   return (
     <section
+      id="experience"
       ref={sectionRef}
       className="relative min-h-screen overflow-hidden"
       style={{
@@ -1103,19 +1114,20 @@ export default function LifeStory() {
               />
 
               <span className="font-mono text-[8px] font-bold tracking-[0.2em] text-[#244c35] sm:text-[9px]">
-                EXPERIENCE & JOURNEY BOARD
+                PENGALAMAN & PERJALANAN
               </span>
             </div>
 
             <h2 className="font-pixel text-xl leading-relaxed text-[#173b29] drop-shadow-[2px_2px_0_rgba(255,255,255,.4)] sm:text-2xl md:text-3xl">
-              ACHIEVEMENTS
+              PENCAPAIAN
               <span className="mx-2 text-[#356f45]">&</span>
-              COMMITTEES
+              ORGANISASI
             </h2>
 
             <p className="mx-auto mt-2 max-w-xl text-[10px] leading-relaxed text-[#355a48] sm:text-xs">
-              Perjalanan belajar, pencapaian, pengalaman organisasi, dan
-              berbagai kegiatan yang membentuk perjalanan saya.
+              Kumpulan pengalaman, pencapaian, dan kegiatan yang menjadi bagian
+              dari proses saya dalam berkembang, belajar, bekerja sama, serta
+              mengambil tanggung jawab.
             </p>
           </div>
 
@@ -1133,11 +1145,11 @@ export default function LifeStory() {
 
                   <div>
                     <p className="font-pixel text-[10px] text-[#173b29] sm:text-xs">
-                      IT CERTIFICATES
+                      SERTIFIKASI TEKNOLOGI
                     </p>
 
                     <p className="font-mono text-[7px] text-[#567564]">
-                      DEVELOPMENT_PATH // 2024—2026
+                      DEVELOPMENT
                     </p>
                   </div>
                 </div>
@@ -1150,7 +1162,7 @@ export default function LifeStory() {
                   number="A1"
                   icon={Code2}
                   title="Coding for Teens"
-                  subtitle="Educourse.id x SMK Medikacom RPL"
+                  subtitle="Educourse.id "
                   badge="3 CERTIFICATES"
                   date="2024 — 2025"
                   accent="#8acb91"
@@ -1185,11 +1197,11 @@ export default function LifeStory() {
 
                   <div>
                     <p className="font-pixel text-[10px] text-[#173b29] sm:text-xs">
-                      OTHER ACHIEVEMENTS
+                      PENCAPAIAN LAINNYA
                     </p>
 
                     <p className="font-mono text-[7px] text-[#587566]">
-                      NON_IT // SCHOOL_LEVEL
+                      SELAIN TEKNOLOGI
                     </p>
                   </div>
                 </div>
@@ -1249,11 +1261,11 @@ export default function LifeStory() {
 
                   <div>
                     <p className="font-pixel text-[10px] text-[#173b29] sm:text-xs">
-                      COMMITTEES
+                      PENGALAMAN ORGANISASI
                     </p>
 
                     <p className="font-mono text-[7px] text-[#587566]">
-                      LEADERSHIP // TEAMWORK
+                      KEPEMIMPINAN & KERJA SAMA TIM
                     </p>
                   </div>
                 </div>

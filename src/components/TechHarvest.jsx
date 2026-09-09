@@ -18,10 +18,10 @@ const projects = [
     id: "v3q7cn",
     title: "APLIKASI KOPERASI DESA",
     tech: "React • Tailwind",
-    desc: "Sistem informasi koperasi desa dengan manajemen anggota dan transaksi.",
+    desc: "Sistem informasi untuk mengelola anggota dan transaksi koperasi",
     Icon: Store,
     hex: "#34D399",
-    tags: ["Web App", "UI/UX"],
+    tags: ["FRONTEND", "UI/UX"],
     image: "/view/view-kopdes.png",
     githubUrl: "https://github.com/airlanggapangestu/kopdes",
     demoUrl: "https://kopdes-pi.vercel.app/",
@@ -30,10 +30,10 @@ const projects = [
     id: "tugasku",
     title: "APLIKASI TO DO LIST",
     tech: "React • Tailwind • PHP • MySQL",
-    desc: "Aplikasi untuk membantu mencatat dan mengatur berbagai tugas atau aktivitas agar lebih terorganisir.",
+    desc: "Aplikasi untuk mencatat, mengatur, dan memantau berbagai tugas.",
     Icon: Layout,
     hex: "#FBBF24",
-    tags: ["Full Stack", "Productivity"],
+    tags: ["Full Stack", "UI/UX"],
     image: "/view/view-tugasku.png",
     githubUrl: "https://github.com/airlanggapangestu/TugasKu",
     demoUrl: "#",
@@ -640,7 +640,7 @@ function ProjectCard({ project, index }) {
             shadow-[3px_3px_0_#241e16]
           "
         >
-          PROJECT_{String(index + 1).padStart(2, "0")}
+          PROYEK_{String(index + 1).padStart(2, "0")}
         </div>
       </div>
 
@@ -785,6 +785,7 @@ export default function TechHarvest() {
 
   return (
     <section
+      id="projects"
       ref={sectionRef}
       className="
         relative
@@ -981,7 +982,7 @@ export default function TechHarvest() {
             "
           >
             <span className="h-2 w-2 animate-pulse bg-[#8fbe6d]" />
-            TECH_HARVEST // PROJECT_ZONE
+            ZONA PROYEK
           </motion.div>
 
           <h2
@@ -995,8 +996,8 @@ export default function TechHarvest() {
               lg:text-4xl
             "
           >
-            MY TECH
-            <span className="text-[#8fbd6b]"> HARVEST</span>
+            HASIL PROYEK
+            <span className="text-[#8fbd6b]"> SAYA</span>
           </h2>
 
           <p
@@ -1011,8 +1012,8 @@ export default function TechHarvest() {
               sm:text-sm
             "
           >
-            Beberapa project yang saya bangun selama perjalanan belajar dan
-            mengembangkan kemampuan di dunia teknologi.
+            Kumpulan proyek yang saya kembangkan untuk menerapkan kemampuan
+            dalam pengembangan web, desain, dan pemecahan masalah.
           </p>
         </div>
 
@@ -1057,7 +1058,7 @@ export default function TechHarvest() {
 
           <span className="flex items-center gap-2">
             <CircleDot size={8} />
-            MORE PROJECTS GROWING
+            PROYEK LAINNYA
           </span>
 
           <span className="h-[2px] w-8 bg-[#3c6240]" />
