@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Bug,
@@ -11,12 +11,10 @@ import {
   RotateCcw,
   Gem,
   Pickaxe,
-  GripVertical,
-  Hand,
 } from "lucide-react";
 
 /* =========================================================
-   BLOK KODE (DRAGGABLE / TAPPABLE)
+   BLOK KODE (DRAGGABLE)
 ========================================================= */
 
 const CODE_BLOCKS = [
@@ -76,9 +74,13 @@ function Stalactites() {
           key={i}
           className="absolute top-0"
           style={{ left: s.left }}
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.7, delay: i * 0.1, ease: "easeOut" }}
+          animate={{ y: [0, 2, 0] }}
+          transition={{
+            duration: 4 + i,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: s.delay,
+          }}
         >
           <div
             style={{
@@ -209,9 +211,6 @@ function BottomEnd() {
     <div className="absolute inset-x-0 bottom-0 h-[60px] z-[10] pointer-events-none">
       <div className="absolute bottom-0 left-0 w-full h-[40px] bg-[#0d0b09]" />
       <div className="absolute bottom-[40px] left-0 w-full h-[20px] bg-gradient-to-t from-[#0d0b09] to-transparent" />
-      <div className="absolute bottom-0 left-[15%] h-[8px] w-20 bg-[#1a1512]" />
-      <div className="absolute bottom-0 left-[45%] h-[8px] w-24 bg-[#1a1512]" />
-      <div className="absolute bottom-0 right-[15%] h-[8px] w-20 bg-[#1a1512]" />
     </div>
   );
 }
@@ -222,11 +221,21 @@ function BottomEnd() {
 
 export default function CodeWorkbench() {
   const [draggedBlock, setDraggedBlock] = useState(null);
-  const [selectedBlock, setSelectedBlock] = useState(null); // untuk tap-to-place mobile
   const [placedBlock, setPlacedBlock] = useState(null);
   const [treeState, setTreeState] = useState("idle");
   const [showResult, setShowResult] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
+  const dropZoneRef = useRef(null);
+
+  /* ============ PLACE BLOCK ============ */
+
+  const placeBlock = (block) => {
+    setPlacedBlock(block);
+    setTreeState(block.correct ? "growing" : "dead");
+    setShowResult(true);
+    setDraggedBlock(null);
+    setIsDragOver(false);
+  };
 
   /* ============ DRAG & DROP (Desktop) ============ */
 
@@ -242,16 +251,9 @@ export default function CodeWorkbench() {
 
   const handleDrop = (e) => {
     e.preventDefault();
-    setIsDragOver(false);
-
-    const blockToPlace = draggedBlock || selectedBlock;
-    if (!blockToPlace) return;
-
-    setPlacedBlock(blockToPlace);
-    setTreeState(blockToPlace.correct ? "growing" : "dead");
-    setShowResult(true);
-    setDraggedBlock(null);
-    setSelectedBlock(null);
+    if (draggedBlock) {
+      placeBlock(draggedBlock);
+    }
   };
 
   const handleDragOver = (e) => {
@@ -263,30 +265,42 @@ export default function CodeWorkbench() {
     setIsDragOver(false);
   };
 
-  /* ============ TAP TO PLACE (Mobile) ============ */
+  /* ============ TOUCH EVENTS (Mobile) ============ */
 
-  const handleBlockTap = (block) => {
-    // Kalau blok sudah dipilih, langsung place
-    if (selectedBlock?.id === block.id) {
-      setPlacedBlock(block);
-      setTreeState(block.correct ? "growing" : "dead");
-      setShowResult(true);
-      setSelectedBlock(null);
-      return;
-    }
-
-    // Pilih blok dulu
-    setSelectedBlock(block);
+  const handleTouchStart = (block) => {
+    setDraggedBlock(block);
     setShowResult(false);
   };
 
-  const handleDropZoneTap = () => {
-    if (selectedBlock) {
-      setPlacedBlock(selectedBlock);
-      setTreeState(selectedBlock.correct ? "growing" : "dead");
-      setShowResult(true);
-      setSelectedBlock(null);
+  const handleTouchMove = (e) => {
+    // Cegah scroll saat drag
+    if (draggedBlock) {
+      e.preventDefault();
     }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!draggedBlock) return;
+
+    // Cek apakah posisi touch berada di drop zone
+    const touch = e.changedTouches[0];
+    const dropZone = dropZoneRef.current;
+
+    if (dropZone) {
+      const rect = dropZone.getBoundingClientRect();
+      const isOverDropZone =
+        touch.clientX >= rect.left &&
+        touch.clientX <= rect.right &&
+        touch.clientY >= rect.top &&
+        touch.clientY <= rect.bottom;
+
+      if (isOverDropZone) {
+        placeBlock(draggedBlock);
+      }
+    }
+
+    setDraggedBlock(null);
+    setIsDragOver(false);
   };
 
   const resetPuzzle = () => {
@@ -294,7 +308,6 @@ export default function CodeWorkbench() {
     setTreeState("idle");
     setShowResult(false);
     setDraggedBlock(null);
-    setSelectedBlock(null);
     setIsDragOver(false);
   };
 
@@ -339,11 +352,8 @@ export default function CodeWorkbench() {
           <span className="font-pixel text-[7px] text-[#8fbd6b]">
             CARA MAIN:
           </span>
-          <span className="text-[9px] text-[#a8bba0] hidden sm:inline">
+          <span className="text-[9px] text-[#a8bba0]">
             1. Drag blok ke slot
-          </span>
-          <span className="text-[9px] text-[#a8bba0] sm:hidden">
-            1. Tap blok → tap slot
           </span>
           <span className="text-[9px] text-[#a8bba0]">2. Lihat hasil</span>
         </motion.div>
@@ -471,14 +481,16 @@ export default function CodeWorkbench() {
                 {"{"}
               </p>
 
-              {/* DROP ZONE — drag (desktop) + tap (mobile) */}
+              {/* DROP ZONE */}
               <div
+                ref={dropZoneRef}
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
-                onClick={handleDropZoneTap}
-                className={`pl-3 flex items-center gap-1.5 border-2 border-dashed rounded-lg p-2 transition-all duration-300 cursor-pointer ${
-                  isDragOver || selectedBlock
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                className={`pl-3 flex items-center gap-1.5 border-2 border-dashed rounded-lg p-2 transition-all duration-300 ${
+                  isDragOver
                     ? "border-[#8fbd6b] bg-[#26221e]"
                     : placedBlock
                       ? "border-[#5d8147] bg-[#1a1512]"
@@ -495,21 +507,14 @@ export default function CodeWorkbench() {
                     <placedBlock.icon className="w-2.5 h-2.5" />
                     {placedBlock.label}
                   </motion.span>
-                ) : selectedBlock ? (
-                  <span className="text-[8px] text-[#8fbd6b] italic">
-                    Tap untuk menaruh: {selectedBlock.label}
-                  </span>
                 ) : (
                   <span className="text-[#a8bba0]/40 italic text-[8px]">
-                    [ DRAG / TAP BLOK KE SINI ]
+                    [ DRAG BLOK KE SINI ]
                   </span>
                 )}
                 {placedBlock && (
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      resetPuzzle();
-                    }}
+                    onClick={resetPuzzle}
                     className="ml-auto text-[#a8bba0]/50 hover:text-red-400 transition"
                     aria-label="Remove block"
                   >
@@ -518,17 +523,15 @@ export default function CodeWorkbench() {
                 )}
               </div>
 
-              <p className="text-[#a8bba0]/40">
-                // drag / tap blok untuk eksekusi
-              </p>
+              <p className="text-[#a8bba0]/40">// drag blok untuk eksekusi</p>
               <p className="text-[#f2d878]">{"}"}</p>
               <p className="pl-3 text-[#7dd3a8]">growTree();</p>
             </div>
 
-            {/* BLOK DRAGGABLE / TAPPABLE */}
+            {/* BLOK DRAGGABLE */}
             <div>
               <p className="font-pixel text-[7px] text-[#8fbd6b]/60 text-center mb-2">
-                PILIH BLOK:
+                DRAG BLOK KE SLOT:
               </p>
               <div className="grid grid-cols-3 gap-2">
                 {CODE_BLOCKS.map((block) => (
@@ -537,16 +540,12 @@ export default function CodeWorkbench() {
                     draggable
                     onDragStart={() => handleDragStart(block)}
                     onDragEnd={handleDragEnd}
-                    onClick={() => handleBlockTap(block)}
+                    onTouchStart={() => handleTouchStart(block)}
                     whileHover={{ scale: 1.03, y: -2 }}
                     whileTap={{ scale: 0.95 }}
-                    className={`px-2 py-2.5 rounded-lg border-2 ${block.color} text-white font-bold text-[8px] shadow-md transition-all flex flex-col items-center gap-1 cursor-grab active:cursor-grabbing ${
-                      selectedBlock?.id === block.id
-                        ? "ring-4 ring-white/50"
-                        : ""
-                    }`}
+                    className={`px-2 py-2.5 rounded-lg border-2 ${block.color} text-white font-bold text-[8px] shadow-md transition-all flex flex-col items-center gap-1 cursor-grab active:cursor-grabbing touch-none`}
+                    style={{ touchAction: "none" }}
                   >
-                    <GripVertical className="w-3 h-3 opacity-50" />
                     <block.icon className="w-4 h-4" />
                     <span>{block.label}</span>
                     <span className="text-[6px] font-normal opacity-80">
@@ -555,11 +554,6 @@ export default function CodeWorkbench() {
                   </motion.div>
                 ))}
               </div>
-
-              {/* Hint mobile */}
-              <p className="text-[7px] text-[#a8bba0]/40 text-center mt-2 sm:hidden">
-                Tap blok → tap slot untuk menaruh
-              </p>
             </div>
           </motion.div>
         </div>
@@ -587,21 +581,6 @@ export default function CodeWorkbench() {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* END INDICATOR */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-          className="mt-8 flex flex-col items-center gap-2"
-        >
-          <div className="flex items-center gap-2 font-mono text-[8px] tracking-[0.2em] text-[#a8bba0]/40">
-            <Pickaxe size={12} />
-            <span>END OF JOURNEY</span>
-            <Pickaxe size={12} className="-scale-x-100" />
-          </div>
-        </motion.div>
       </div>
     </section>
   );
