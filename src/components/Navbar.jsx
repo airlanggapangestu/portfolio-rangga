@@ -13,19 +13,19 @@ import {
 
 const NAV_LINKS = [
   {
-    name: "HOME",
+    name: "BERANDA",
     href: "#hero",
     code: "01",
     icon: TreePine,
   },
   {
-    name: "EXPERIENCE",
+    name: "PENGALAMAN",
     href: "#experience",
     code: "02",
     icon: Layers3,
   },
   {
-    name: "PROJECTS",
+    name: "PROYEK",
     href: "#projects",
     code: "03",
     icon: FolderGit2,
@@ -320,7 +320,7 @@ export default function Navbar() {
                 </motion.span>
 
                 <span className="font-pixel text-[8px] text-white/80">
-                  CAMPFIRE
+                  HUBUNGI SAYA
                 </span>
 
                 <ChevronRight

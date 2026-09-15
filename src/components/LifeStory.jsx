@@ -17,10 +17,12 @@ import {
   X,
   ExternalLink,
   Calendar,
-  Flag,
+  Box,
   GraduationCap,
   ChevronRight,
   Globe,
+  ChessKnight,
+  Bot,
 } from "lucide-react";
 
 /* =========================================================
@@ -31,7 +33,7 @@ const itCertificates = [
   {
     id: "educourse-starter",
     title: "Coding for Teens (Starter)",
-    issuer: "Educourse.id x SMK Medikacom RPL",
+    issuer: "Educourse.id",
     date: "05 Desember 2024",
     badge: "STARTER LEVEL",
     image: "/certs/educourse-starter.jpeg",
@@ -39,7 +41,7 @@ const itCertificates = [
   {
     id: "educourse-beginner",
     title: "Coding for Teens (Beginner)",
-    issuer: "Educourse.id x SMK Medikacom RPL",
+    issuer: "Educourse.id",
     date: "05 Juni 2025",
     badge: "BEGINNER LEVEL",
     image: "/certs/educourse-beginner.jpeg",
@@ -47,7 +49,7 @@ const itCertificates = [
   {
     id: "educourse-advance",
     title: "Coding for Teens Level Advance",
-    issuer: "Educourse.id x SMK Medikacom RPL",
+    issuer: "Educourse.id",
     date: "16 Desember 2025",
     badge: "ADVANCE LEVEL",
     image: "/certs/educourse-advance.jpeg",
@@ -73,6 +75,10 @@ const nonItAchievements = [
     level: "Pencapaian Tingkat Sekolah",
     icon: Laugh,
     hex: "#FBBF24",
+    certImage: "/certs/comedy.jpeg",
+    badge: "Sekolah",
+    issuer: "SMK Medikacom Bandung",
+    date: "28 Oktober 2024",
     schoolNewsUrl:
       "https://medikacom.sch.id/kegiatan-lomba-literasi-smk-medikacom-bandung/",
   },
@@ -80,16 +86,24 @@ const nonItAchievements = [
     id: "chess",
     title: "Lomba Catur",
     level: "Pencapaian Tingkat Sekolah",
-    icon: Award,
+    icon: ChessKnight,
     hex: "#F59E0B",
+    certImage: "/certs/catur.jpeg",
+    badge: "Sekolah",
+    issuer: "SMK Medikacom Bandung",
+    date: "18 Juni 2026",
     schoolNewsUrl: null,
   },
   {
     id: "angklung",
-    title: "Lomba Angklung",
-    level: "Pencapaian Tingkat Daerah",
+    title: "Partisipasi Kegiatan Angklung",
+    level: "Provinsi / Umum",
     icon: Award,
     hex: "#F59E0B",
+    certImage: "/certs/angklung.jpeg",
+    badge: "Provinsi",
+    issuer: "Dinas Pariwisata dan Kebudayaan Provinsi Jawa Barat",
+    date: "18 November 2018",
     schoolNewsUrl: null,
   },
 ];
@@ -110,14 +124,13 @@ const committees = [
   {
     title: "Devisi Logistik — Pekan Olahraga Antar Kelas",
     desc: "Mengelola perlengkapan dan kebutuhan teknis acara.",
-    icon: Flag,
+    icon: Box,
     hex: "#38BDF8",
   },
 ];
 
 /* =========================================================
    PIXEL CLOUDS
-   Tidak ada matahari karena sudah ada di HeroSection.
 ========================================================= */
 
 const PixelCloud = ({ className = "", scale = 1 }) => {
@@ -146,30 +159,19 @@ const PixelCloud = ({ className = "", scale = 1 }) => {
 
 /* =========================================================
    SKY
-   60% DARI SATU PAGE
 ========================================================= */
 
 const PixelSky = () => {
   return (
     <div className="absolute inset-x-0 top-0 h-[60%] overflow-hidden pointer-events-none">
-      {/* Clouds */}
       <PixelCloud className="left-[5%] top-[17%]" scale={0.9} />
-
       <PixelCloud className="left-[42%] top-[31%]" scale={0.65} />
-
       <PixelCloud className="right-[9%] top-[22%]" scale={0.8} />
 
-      {/* tiny distant cloud */}
       <motion.div
         className="absolute left-[73%] top-[43%] opacity-25"
-        animate={{
-          x: [0, -15, 0],
-        }}
-        transition={{
-          duration: 16,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        animate={{ x: [0, -15, 0] }}
+        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
       >
         <div className="flex items-end gap-1">
           <div className="h-2 w-8 bg-white/60" />
@@ -178,40 +180,22 @@ const PixelSky = () => {
         </div>
       </motion.div>
 
-      {/* atmospheric particles */}
       <motion.div
         className="absolute left-[18%] top-[35%] h-1 w-1 bg-white/45"
-        animate={{
-          y: [0, -12, 0],
-          opacity: [0.2, 0.7, 0.2],
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-        }}
+        animate={{ y: [0, -12, 0], opacity: [0.2, 0.7, 0.2] }}
+        transition={{ duration: 4, repeat: Infinity }}
       />
 
       <motion.div
         className="absolute left-[58%] top-[19%] h-1.5 w-1.5 bg-white/35"
-        animate={{
-          y: [0, 15, 0],
-          opacity: [0.15, 0.5, 0.15],
-        }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-        }}
+        animate={{ y: [0, 15, 0], opacity: [0.15, 0.5, 0.15] }}
+        transition={{ duration: 5, repeat: Infinity }}
       />
 
       <motion.div
         className="absolute right-[22%] top-[40%] h-1 w-1 bg-white/40"
-        animate={{
-          y: [0, -10, 0],
-        }}
-        transition={{
-          duration: 4.5,
-          repeat: Infinity,
-        }}
+        animate={{ y: [0, -10, 0] }}
+        transition={{ duration: 4.5, repeat: Infinity }}
       />
     </div>
   );
@@ -225,45 +209,20 @@ const PixelBird = ({ top, left, scale = 1, duration = 18, delay = 0 }) => {
   return (
     <motion.div
       className="absolute pointer-events-none z-[4]"
-      style={{
-        top,
-        left,
-        scale,
-      }}
-      animate={{
-        x: ["0vw", "95vw"],
-        y: [0, -15, 5, -10, 0],
-      }}
-      transition={{
-        duration,
-        delay,
-        repeat: Infinity,
-        ease: "linear",
-      }}
+      style={{ top, left, scale }}
+      animate={{ x: ["0vw", "95vw"], y: [0, -15, 5, -10, 0] }}
+      transition={{ duration, delay, repeat: Infinity, ease: "linear" }}
     >
       <div className="relative h-6 w-12">
         <motion.div
           className="absolute left-0 top-2 h-[3px] w-5 bg-[#365d50]"
-          animate={{
-            rotate: [20, -12, 20],
-          }}
-          transition={{
-            duration: 0.8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          animate={{ rotate: [20, -12, 20] }}
+          transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
         />
-
         <motion.div
           className="absolute right-0 top-2 h-[3px] w-5 bg-[#365d50]"
-          animate={{
-            rotate: [-20, 12, -20],
-          }}
-          transition={{
-            duration: 0.8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          animate={{ rotate: [-20, 12, -20] }}
+          transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
         />
       </div>
     </motion.div>
@@ -274,11 +233,8 @@ const FlyingBirds = () => {
   return (
     <>
       <PixelBird top="17%" left="-10%" scale={0.65} duration={24} />
-
       <PixelBird top="27%" left="-20%" scale={0.45} duration={30} delay={6} />
-
       <PixelBird top="40%" left="-15%" scale={0.8} duration={27} delay={11} />
-
       <PixelBird top="48%" left="-20%" scale={0.35} duration={32} delay={15} />
     </>
   );
@@ -292,38 +248,25 @@ const PixelLeafCluster = ({ className = "", scale = 1 }) => {
   return (
     <motion.div
       className={`absolute ${className}`}
-      style={{
-        scale,
-        transformOrigin: "bottom center",
-      }}
-      animate={{
-        rotate: [-1.2, 1.2, -1.2],
-      }}
-      transition={{
-        duration: 5,
-        repeat: Infinity,
-        ease: "easeInOut",
-      }}
+      style={{ scale, transformOrigin: "bottom center" }}
+      animate={{ rotate: [-1.2, 1.2, -1.2] }}
+      transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
     >
       <div className="relative h-28 w-36">
-        {/* dark back foliage */}
         <div className="absolute left-4 top-9 h-12 w-16 bg-[#164d31]" />
         <div className="absolute left-16 top-3 h-16 w-16 bg-[#1d5a35]" />
         <div className="absolute left-1 top-17 h-10 w-28 bg-[#205f39]" />
         <div className="absolute left-28 top-13 h-11 w-9 bg-[#174a2e]" />
 
-        {/* middle leaves */}
         <div className="absolute left-10 top-2 h-10 w-11 bg-[#2d7843]" />
         <div className="absolute left-25 top-7 h-10 w-12 bg-[#367f48]" />
         <div className="absolute left-5 top-12 h-11 w-12 bg-[#2f7742]" />
         <div className="absolute left-19 top-20 h-10 w-14 bg-[#286d3d]" />
 
-        {/* highlights */}
         <div className="absolute left-12 top-6 h-3 w-5 bg-[#55a653]" />
         <div className="absolute left-27 top-11 h-3 w-6 bg-[#62ad58]" />
         <div className="absolute left-7 top-19 h-3 w-5 bg-[#4b994e]" />
 
-        {/* sky holes */}
         <div className="absolute left-1 top-9 h-3 w-3 bg-[#a8d4c8]" />
         <div className="absolute left-20 top-1 h-3 w-3 bg-[#d5f0e1]" />
         <div className="absolute left-34 top-21 h-3 w-3 bg-[#7ab8d5]" />
@@ -343,22 +286,10 @@ const PixelFruit = ({ className = "", type = "red" }) => {
   return (
     <motion.div
       className={`absolute ${className}`}
-      animate={{
-        y: [0, 3, 0],
-      }}
-      transition={{
-        duration: 3,
-        repeat: Infinity,
-        ease: "easeInOut",
-      }}
+      animate={{ y: [0, 3, 0] }}
+      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
     >
-      <div
-        className="h-3 w-3"
-        style={{
-          backgroundColor: color,
-        }}
-      />
-
+      <div className="h-3 w-3" style={{ backgroundColor: color }} />
       <div className="absolute -top-2 left-1 h-2 w-1 bg-[#275b35]" />
     </motion.div>
   );
@@ -366,86 +297,41 @@ const PixelFruit = ({ className = "", type = "red" }) => {
 
 /* =========================================================
    LEFT TREE
-   Canopy -> branch -> trunk
-   Tidak ada tanah / akar / grass.
 ========================================================= */
 
 const LeftTree = () => {
   return (
     <div className="absolute left-[-85px] top-[45%] h-[90%] w-[330px] sm:left-[-35px] sm:w-[390px] lg:left-[0%] lg:w-[430px] pointer-events-none">
-      {/* =================================================
-          CANOPY
-      ================================================== */}
-
       <PixelLeafCluster className="left-[0px] top-[-25px]" scale={1.05} />
-
       <PixelLeafCluster className="left-[105px] top-[-10px]" scale={0.88} />
-
       <PixelLeafCluster className="left-[180px] top-[25px]" scale={0.7} />
 
-      {/* =================================================
-          BRANCH SYSTEM
-      ================================================== */}
-
-      {/* main branch */}
       <motion.div
         className="absolute left-[130px] top-[92px] h-[17px] w-[190px] origin-left bg-[#593821]"
-        animate={{
-          rotate: [-17, -15, -17],
-        }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        animate={{ rotate: [-17, -15, -17] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* secondary branch */}
       <motion.div
         className="absolute left-[110px] top-[105px] h-[12px] w-[125px] origin-right bg-[#68432a]"
-        animate={{
-          rotate: [18, 20, 18],
-        }}
-        transition={{
-          duration: 5.5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        animate={{ rotate: [18, 20, 18] }}
+        transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* upper branch */}
       <div className="absolute left-[175px] top-[67px] h-[10px] w-[90px] rotate-[-38deg] bg-[#654027]" />
-
       <div className="absolute left-[182px] top-[78px] h-[9px] w-[75px] rotate-[35deg] bg-[#70472b]" />
 
-      {/* =================================================
-          TRUNK
-          Trunk dibuat terus turun keluar section.
-      ================================================== */}
-
       <div className="absolute left-[137px] top-[90px] h-[650px] w-[62px] bg-[#573621]" />
-
       <div className="absolute left-[151px] top-[90px] h-[650px] w-[19px] bg-[#70482b]" />
-
       <div className="absolute left-[185px] top-[110px] h-[650px] w-[9px] bg-[#432b1c]" />
 
-      {/* trunk texture */}
       <div className="absolute left-[138px] top-[160px] h-7 w-4 bg-[#70482b]" />
-
       <div className="absolute left-[177px] top-[215px] h-8 w-4 bg-[#3e291c]" />
-
       <div className="absolute left-[151px] top-[270px] h-5 w-3 bg-[#815433]" />
-
       <div className="absolute left-[187px] top-[340px] h-10 w-3 bg-[#382419]" />
 
-      {/* =================================================
-          FRUIT
-      ================================================== */}
-
       <PixelFruit className="left-[45px] top-[60px]" type="red" />
-
       <PixelFruit className="left-[245px] top-[42px]" type="yellow" />
-
       <PixelFruit className="left-[84px] top-[112px]" type="orange" />
     </div>
   );
@@ -458,68 +344,36 @@ const LeftTree = () => {
 const RightTree = () => {
   return (
     <div className="absolute right-[-90px] top-[43%] h-[92%] w-[350px] sm:right-[-45px] sm:w-[410px] lg:right-[0%] lg:w-[450px] pointer-events-none">
-      {/* CANOPY */}
-
       <PixelLeafCluster className="right-[0px] top-[-30px]" scale={1.08} />
-
       <PixelLeafCluster className="right-[105px] top-[-5px]" scale={0.85} />
-
       <PixelLeafCluster className="right-[185px] top-[20px]" scale={0.68} />
-
-      {/* branches */}
 
       <motion.div
         className="absolute right-[125px] top-[90px] h-[17px] w-[205px] origin-right bg-[#593821]"
-        animate={{
-          rotate: [17, 15, 17],
-        }}
-        transition={{
-          duration: 5.5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        animate={{ rotate: [17, 15, 17] }}
+        transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
       />
 
       <motion.div
         className="absolute right-[115px] top-[107px] h-[12px] w-[125px] origin-left bg-[#68432a]"
-        animate={{
-          rotate: [-20, -18, -20],
-        }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        animate={{ rotate: [-20, -18, -20] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       />
 
       <div className="absolute right-[175px] top-[66px] h-[10px] w-[90px] rotate-[39deg] bg-[#654027]" />
-
       <div className="absolute right-[182px] top-[80px] h-[9px] w-[75px] rotate-[-35deg] bg-[#70472b]" />
 
-      {/* trunk */}
-
       <div className="absolute right-[135px] top-[88px] h-[660px] w-[64px] bg-[#573621]" />
-
       <div className="absolute right-[157px] top-[88px] h-[660px] w-[19px] bg-[#70482b]" />
-
       <div className="absolute right-[134px] top-[110px] h-[660px] w-[9px] bg-[#432b1c]" />
 
-      {/* texture */}
-
       <div className="absolute right-[180px] top-[160px] h-7 w-4 bg-[#70482b]" />
-
       <div className="absolute right-[142px] top-[215px] h-8 w-4 bg-[#3e291c]" />
-
       <div className="absolute right-[170px] top-[275px] h-5 w-3 bg-[#815433]" />
-
       <div className="absolute right-[136px] top-[350px] h-10 w-3 bg-[#382419]" />
 
-      {/* fruit */}
-
       <PixelFruit className="right-[48px] top-[55px]" type="red" />
-
       <PixelFruit className="right-[245px] top-[40px]" type="yellow" />
-
       <PixelFruit className="right-[82px] top-[112px]" type="orange" />
     </div>
   );
@@ -531,36 +385,12 @@ const RightTree = () => {
 
 const HangingVines = () => {
   const vines = [
-    {
-      left: "8%",
-      height: "135px",
-      delay: 0,
-    },
-    {
-      left: "18%",
-      height: "95px",
-      delay: 0.7,
-    },
-    {
-      left: "29%",
-      height: "160px",
-      delay: 1.2,
-    },
-    {
-      left: "72%",
-      height: "140px",
-      delay: 0.5,
-    },
-    {
-      left: "83%",
-      height: "100px",
-      delay: 1.4,
-    },
-    {
-      left: "91%",
-      height: "150px",
-      delay: 2,
-    },
+    { left: "8%", height: "135px", delay: 0 },
+    { left: "18%", height: "95px", delay: 0.7 },
+    { left: "29%", height: "160px", delay: 1.2 },
+    { left: "72%", height: "140px", delay: 0.5 },
+    { left: "83%", height: "100px", delay: 1.4 },
+    { left: "91%", height: "150px", delay: 2 },
   ];
 
   return (
@@ -569,13 +399,8 @@ const HangingVines = () => {
         <motion.div
           key={index}
           className="absolute top-[48%] z-[3] origin-top pointer-events-none"
-          style={{
-            left: vine.left,
-            height: vine.height,
-          }}
-          animate={{
-            rotate: [-2, 3, -2],
-          }}
+          style={{ left: vine.left, height: vine.height }}
+          animate={{ rotate: [-2, 3, -2] }}
           transition={{
             duration: 5 + index * 0.4,
             repeat: Infinity,
@@ -587,35 +412,18 @@ const HangingVines = () => {
 
           <motion.div
             className="absolute -left-2 top-[22%] h-3 w-5 bg-[#3f8d4a]"
-            animate={{
-              rotate: [-10, 8, -10],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-            }}
+            animate={{ rotate: [-10, 8, -10] }}
+            transition={{ duration: 3, repeat: Infinity }}
           />
-
           <motion.div
             className="absolute left-1 top-[48%] h-3 w-5 bg-[#347b41]"
-            animate={{
-              rotate: [8, -10, 8],
-            }}
-            transition={{
-              duration: 3.5,
-              repeat: Infinity,
-            }}
+            animate={{ rotate: [8, -10, 8] }}
+            transition={{ duration: 3.5, repeat: Infinity }}
           />
-
           <motion.div
             className="absolute -left-2 top-[72%] h-3 w-5 bg-[#4a9850]"
-            animate={{
-              rotate: [-8, 10, -8],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-            }}
+            animate={{ rotate: [-8, 10, -8] }}
+            transition={{ duration: 4, repeat: Infinity }}
           />
         </motion.div>
       ))}
@@ -629,30 +437,10 @@ const HangingVines = () => {
 
 const FloatingLeaves = () => {
   const leaves = [
-    {
-      left: "12%",
-      top: "53%",
-      rotate: 15,
-      delay: 0,
-    },
-    {
-      left: "25%",
-      top: "62%",
-      rotate: -25,
-      delay: 1.2,
-    },
-    {
-      left: "69%",
-      top: "57%",
-      rotate: 20,
-      delay: 2,
-    },
-    {
-      left: "80%",
-      top: "68%",
-      rotate: -15,
-      delay: 0.8,
-    },
+    { left: "12%", top: "53%", rotate: 15, delay: 0 },
+    { left: "25%", top: "62%", rotate: -25, delay: 1.2 },
+    { left: "69%", top: "57%", rotate: 20, delay: 2 },
+    { left: "80%", top: "68%", rotate: -15, delay: 0.8 },
   ];
 
   return (
@@ -661,10 +449,7 @@ const FloatingLeaves = () => {
         <motion.div
           key={index}
           className="absolute z-[5] pointer-events-none"
-          style={{
-            left: leaf.left,
-            top: leaf.top,
-          }}
+          style={{ left: leaf.left, top: leaf.top }}
           animate={{
             y: [0, 16, 34],
             x: [0, 12, -5],
@@ -710,16 +495,8 @@ const AmbientPixels = () => {
         <motion.div
           key={index}
           className="absolute z-[2] pointer-events-none bg-[#d8f1df]/35"
-          style={{
-            left,
-            top,
-            width: size,
-            height: size,
-          }}
-          animate={{
-            y: [0, -12, 0],
-            opacity: [0.15, 0.7, 0.15],
-          }}
+          style={{ left, top, width: size, height: size }}
+          animate={{ y: [0, -12, 0], opacity: [0.15, 0.7, 0.15] }}
           transition={{
             duration: 3 + index * 0.3,
             repeat: Infinity,
@@ -749,57 +526,49 @@ const CertificateModal = ({ cert, onClose }) => {
         onClick={onClose}
       >
         <motion.div
-          className="relative max-h-[92vh] w-full max-w-5xl overflow-auto border-4 border-[#183c29] bg-[#d5f0e1] shadow-[10px_10px_0_#081d13]"
-          initial={{
-            scale: 0.85,
-            y: 30,
-          }}
-          animate={{
-            scale: 1,
-            y: 0,
-          }}
-          exit={{
-            scale: 0.85,
-            y: 30,
-          }}
+          className="relative flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden border-4 border-[#183c29] bg-[#d5f0e1] shadow-[10px_10px_0_#081d13]"
+          initial={{ scale: 0.85, y: 30 }}
+          animate={{ scale: 1, y: 0 }}
+          exit={{ scale: 0.85, y: 30 }}
           onClick={(e) => e.stopPropagation()}
         >
+          {/* Header */}
           <div className="flex items-center justify-between border-b-4 border-[#183c29] bg-[#214d35] px-4 py-3">
-            <div>
+            <div className="min-w-0">
               <p className="font-mono text-[10px] tracking-[0.25em] text-[#a9d8bd]">
                 CERTIFICATE_VIEWER
               </p>
-
-              <h3 className="font-pixel text-sm text-white sm:text-base">
+              <h3 className="truncate font-pixel text-sm text-white sm:text-base">
                 {cert.title}
               </h3>
             </div>
 
             <button
               onClick={onClose}
-              className="flex h-9 w-9 items-center justify-center border-2 border-[#0e2a1b] bg-[#e3b34c] text-[#142719] shadow-[3px_3px_0_#0e2a1b] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+              className="ml-3 flex h-9 w-9 shrink-0 items-center justify-center border-2 border-[#0e2a1b] bg-[#e3b34c] text-[#142719] shadow-[3px_3px_0_#0e2a1b] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
             >
               <X size={18} />
             </button>
           </div>
 
-          <div className="bg-[#b8dcca] p-4 sm:p-7">
-            <div className="overflow-hidden border-4 border-[#183c29] bg-white shadow-[6px_6px_0_rgba(16,45,29,.3)]">
+          {/* Image */}
+          <div className="flex-1 overflow-auto bg-[#b8dcca] p-4 sm:p-6">
+            <div className="mx-auto flex max-w-2xl items-center justify-center overflow-hidden border-4 border-[#183c29] bg-white shadow-[6px_6px_0_rgba(16,45,29,.3)]">
               <img
                 src={cert.image}
                 alt={cert.title}
-                className="mx-auto block max-h-[68vh] w-auto max-w-full object-contain"
+                className="block h-auto max-h-[55vh] w-full object-contain"
               />
             </div>
           </div>
 
+          {/* Info */}
           <div className="grid gap-3 border-t-4 border-[#183c29] bg-[#d5f0e1] p-4 sm:grid-cols-3">
             <div>
               <p className="font-mono text-[9px] uppercase tracking-widest text-[#507161]">
                 Issuer
               </p>
-
-              <p className="mt-1 text-sm font-semibold text-[#183c29]">
+              <p className="mt-1 text-xs font-semibold text-[#183c29] sm:text-sm">
                 {cert.issuer}
               </p>
             </div>
@@ -808,8 +577,7 @@ const CertificateModal = ({ cert, onClose }) => {
               <p className="font-mono text-[9px] uppercase tracking-widest text-[#507161]">
                 Date
               </p>
-
-              <p className="mt-1 text-sm font-semibold text-[#183c29]">
+              <p className="mt-1 text-xs font-semibold text-[#183c29] sm:text-sm">
                 {cert.date}
               </p>
             </div>
@@ -818,8 +586,7 @@ const CertificateModal = ({ cert, onClose }) => {
               <p className="font-mono text-[9px] uppercase tracking-widest text-[#507161]">
                 Level
               </p>
-
-              <p className="mt-1 text-sm font-semibold text-[#183c29]">
+              <p className="mt-1 text-xs font-semibold text-[#183c29] sm:text-sm">
                 {cert.badge}
               </p>
             </div>
@@ -846,18 +613,9 @@ const EduCourseModal = ({ certificates, onClose, onOpen }) => {
       >
         <motion.div
           className="w-full max-w-2xl border-4 border-[#183c29] bg-[#d5f0e1] shadow-[10px_10px_0_#081d13]"
-          initial={{
-            scale: 0.9,
-            y: 25,
-          }}
-          animate={{
-            scale: 1,
-            y: 0,
-          }}
-          exit={{
-            scale: 0.9,
-            y: 25,
-          }}
+          initial={{ scale: 0.9, y: 25 }}
+          animate={{ scale: 1, y: 0 }}
+          exit={{ scale: 0.9, y: 25 }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between border-b-4 border-[#183c29] bg-[#214d35] px-4 py-3">
@@ -865,7 +623,6 @@ const EduCourseModal = ({ certificates, onClose, onOpen }) => {
               <p className="font-mono text-[9px] tracking-[0.2em] text-[#a9d8bd]">
                 CERTIFICATE_SERIES
               </p>
-
               <h3 className="font-pixel text-sm text-white">
                 Coding for Teens
               </h3>
@@ -894,7 +651,6 @@ const EduCourseModal = ({ certificates, onClose, onOpen }) => {
                   <p className="font-pixel text-[10px] text-[#183c29] sm:text-xs">
                     {cert.title}
                   </p>
-
                   <p className="mt-1 font-mono text-[9px] text-[#557265]">
                     {cert.date}
                   </p>
@@ -930,24 +686,16 @@ const CertificateCard = ({
   return (
     <motion.button
       onClick={onClick}
-      whileHover={{
-        y: -3,
-      }}
-      whileTap={{
-        x: 2,
-        y: 2,
-      }}
+      whileHover={{ y: -3 }}
+      whileTap={{ x: 2, y: 2 }}
       className="group relative w-full border-2 border-[#173b29] bg-[#e7f5ec] p-3 text-left shadow-[5px_5px_0_#173b29]"
     >
       <div className="flex items-center gap-3">
         <div
           className="relative flex h-12 w-12 shrink-0 items-center justify-center border-2 border-[#173b29]"
-          style={{
-            backgroundColor: accent,
-          }}
+          style={{ backgroundColor: accent }}
         >
           <Icon size={21} className="text-[#143020]" />
-
           <span className="absolute -right-1 -top-1 bg-[#173b29] px-1 font-mono text-[7px] text-white">
             {number}
           </span>
@@ -975,7 +723,6 @@ const CertificateCard = ({
 
       <div className="mt-2 flex items-center justify-between border-t border-[#b5d4c0] pt-2">
         <span className="font-mono text-[8px] text-[#587566]">{date}</span>
-
         <span className="font-mono text-[8px] text-[#376249]">
           LIHAT SERTIFIKAT →
         </span>
@@ -1029,46 +776,24 @@ export default function LifeStory() {
         `,
       }}
     >
-      {/* =====================================================
-          60% SKY
-      ====================================================== */}
-
+      {/* 60% SKY */}
       <PixelSky />
-
       <FlyingBirds />
 
-      {/* =====================================================
-          TREE WORLD
-          Mulai dari sekitar 40% halaman dan terus turun.
-          Tidak ada tanah / rumput.
-      ====================================================== */}
-
+      {/* TREE WORLD */}
       <div className="absolute inset-x-0 top-[39%] h-[100%]">
         <LeftTree />
         <RightTree />
-
         <HangingVines />
-
         <FloatingLeaves />
-
         <AmbientPixels />
       </div>
 
-      {/* =====================================================
-          SOFT ATMOSPHERE
-      ====================================================== */}
-
+      {/* SOFT ATMOSPHERE */}
       <motion.div
         className="absolute left-[48%] top-[51%] z-[2] h-2 w-2 bg-[#e4f5dc]/30 pointer-events-none"
-        animate={{
-          y: [0, -18, 0],
-          opacity: [0.1, 0.7, 0.1],
-        }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        animate={{ y: [0, -18, 0], opacity: [0.1, 0.7, 0.1] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       />
 
       <motion.div
@@ -1078,41 +803,23 @@ export default function LifeStory() {
           y: [0, -20, -35, 0],
           opacity: [0, 0.7, 0.2, 0],
         }}
-        transition={{
-          duration: 7,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* =====================================================
-          CENTER CONTENT
-          Tetap CENTER pada 100vh.
-      ====================================================== */}
-
+      {/* CENTER CONTENT */}
       <motion.div
-        style={{
-          y: contentY,
-          opacity: contentOpacity,
-        }}
+        style={{ y: contentY, opacity: contentOpacity }}
         className="relative z-20 flex min-h-screen items-center justify-center px-4 py-8 sm:px-6 lg:px-8"
       >
         <div className="w-full max-w-5xl">
           {/* HEADER */}
-
           <div className="mx-auto mb-5 max-w-2xl text-center">
             <div className="mb-3 inline-flex items-center gap-2 border-2 border-[#173b29] bg-[#e4f4ea]/90 px-3 py-1.5 shadow-[3px_3px_0_#173b29] backdrop-blur-sm">
               <motion.div
                 className="h-2 w-2 bg-[#e3b34c]"
-                animate={{
-                  opacity: [1, 0.4, 1],
-                }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                }}
+                animate={{ opacity: [1, 0.4, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
               />
-
               <span className="font-mono text-[8px] font-bold tracking-[0.2em] text-[#244c35] sm:text-[9px]">
                 PENGALAMAN & PERJALANAN
               </span>
@@ -1131,10 +838,7 @@ export default function LifeStory() {
             </p>
           </div>
 
-          {/* =================================================
-              CERTIFICATES
-          ================================================== */}
-
+          {/* CERTIFICATES */}
           <div className="space-y-4">
             <div className="border-2 border-[#173b29] bg-[#cfe7d7]/90 p-3 shadow-[6px_6px_0_rgba(15,42,26,.35)] backdrop-blur-[2px]">
               <div className="mb-3 flex items-center justify-between gap-3 border-b-2 border-[#6e9d7e] pb-2">
@@ -1142,18 +846,15 @@ export default function LifeStory() {
                   <div className="flex h-7 w-7 items-center justify-center border-2 border-[#173b29] bg-[#65a873]">
                     <Code2 size={15} className="text-[#143020]" />
                   </div>
-
                   <div>
                     <p className="font-pixel text-[10px] text-[#173b29] sm:text-xs">
                       SERTIFIKASI TEKNOLOGI
                     </p>
-
                     <p className="font-mono text-[7px] text-[#567564]">
                       DEVELOPMENT
                     </p>
                   </div>
                 </div>
-
                 <GraduationCap size={18} className="text-[#39694b]" />
               </div>
 
@@ -1162,7 +863,7 @@ export default function LifeStory() {
                   number="A1"
                   icon={Code2}
                   title="Coding for Teens"
-                  subtitle="Educourse.id "
+                  subtitle="Educourse.id"
                   badge="3 CERTIFICATES"
                   date="2024 — 2025"
                   accent="#8acb91"
@@ -1171,7 +872,7 @@ export default function LifeStory() {
 
                 <CertificateCard
                   number="A2"
-                  icon={Globe}
+                  icon={Bot}
                   title={aiCertificate.title}
                   subtitle={aiCertificate.issuer}
                   badge={aiCertificate.badge}
@@ -1182,24 +883,18 @@ export default function LifeStory() {
               </div>
             </div>
 
-            {/* =================================================
-                LOWER CONTENT
-            ================================================== */}
-
+            {/* LOWER CONTENT */}
             <div className="grid gap-4 lg:grid-cols-2">
               {/* ACHIEVEMENTS */}
-
               <div className="border-2 border-[#173b29] bg-[#d5e9da]/90 p-3 shadow-[5px_5px_0_rgba(15,42,26,.3)] backdrop-blur-[2px]">
                 <div className="mb-3 flex items-center gap-2 border-b-2 border-[#87a992] pb-2">
                   <div className="flex h-7 w-7 items-center justify-center border-2 border-[#173b29] bg-[#f3c758]">
                     <Trophy size={14} className="text-[#4a3510]" />
                   </div>
-
                   <div>
                     <p className="font-pixel text-[10px] text-[#173b29] sm:text-xs">
                       PENCAPAIAN LAINNYA
                     </p>
-
                     <p className="font-mono text-[7px] text-[#587566]">
                       SELAIN TEKNOLOGI
                     </p>
@@ -1213,38 +908,62 @@ export default function LifeStory() {
                     return (
                       <div
                         key={item.id}
-                        className="flex items-center gap-3 border-2 border-[#527460] bg-[#eef8f1] p-2.5"
+                        className="border-2 border-[#527460] bg-[#eef8f1] p-2.5"
                       >
-                        <div
-                          className="flex h-9 w-9 shrink-0 items-center justify-center border-2 border-[#173b29]"
-                          style={{
-                            backgroundColor: item.hex,
-                          }}
-                        >
-                          <Icon size={17} className="text-[#3c3217]" />
-                        </div>
-
-                        <div className="min-w-0 flex-1">
-                          <p className="font-pixel text-[9px] text-[#173b29] sm:text-[10px]">
-                            {item.title}
-                          </p>
-
-                          <p className="mt-0.5 font-mono text-[8px] text-[#597365]">
-                            {item.level}
-                          </p>
-                        </div>
-
-                        {item.schoolNewsUrl && (
-                          <a
-                            href={item.schoolNewsUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex h-7 w-7 shrink-0 items-center justify-center border-2 border-[#527460] bg-[#d5e9da] text-[#315c42] transition-all hover:bg-[#b8d8c1]"
-                            aria-label={`Open ${item.title}`}
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="flex h-9 w-9 shrink-0 items-center justify-center border-2 border-[#173b29]"
+                            style={{ backgroundColor: item.hex }}
                           >
-                            <ExternalLink size={12} />
-                          </a>
-                        )}
+                            <Icon size={17} className="text-[#3c3217]" />
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            <p className="font-pixel text-[9px] text-[#173b29] sm:text-[10px]">
+                              {item.title}
+                            </p>
+                            <p className="mt-0.5 font-mono text-[8px] text-[#597365]">
+                              {item.level}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Action buttons */}
+                        <div className="mt-2 flex items-center justify-between border-t border-[#b5d4c0] pt-2">
+                          {item.certImage ? (
+                            <button
+                              onClick={() =>
+                                setActiveCert({
+                                  title: item.title,
+                                  issuer: item.issuer,
+                                  date: item.date,
+                                  badge: item.badge,
+                                  image: item.certImage,
+                                })
+                              }
+                              className="font-mono text-[8px] text-[#376249] transition-colors hover:text-[#173b29]"
+                            >
+                              LIHAT SERTIFIKAT →
+                            </button>
+                          ) : (
+                            <span className="font-mono text-[8px] text-[#597365]/50">
+                              SERTIFIKAT: -
+                            </span>
+                          )}
+
+                          {item.schoolNewsUrl && (
+                            <a
+                              href={item.schoolNewsUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="flex items-center gap-1 font-mono text-[8px] text-[#527460] transition-colors hover:text-[#173b29]"
+                              aria-label={`Open ${item.title}`}
+                            >
+                              DOKUMENTASI
+                              <ExternalLink size={10} />
+                            </a>
+                          )}
+                        </div>
                       </div>
                     );
                   })}
@@ -1252,18 +971,15 @@ export default function LifeStory() {
               </div>
 
               {/* COMMITTEES */}
-
               <div className="border-2 border-[#173b29] bg-[#d5e9da]/90 p-3 shadow-[5px_5px_0_rgba(15,42,26,.3)] backdrop-blur-[2px]">
                 <div className="mb-3 flex items-center gap-2 border-b-2 border-[#87a992] pb-2">
                   <div className="flex h-7 w-7 items-center justify-center border-2 border-[#173b29] bg-[#77c9a0]">
                     <Users size={14} className="text-[#173b29]" />
                   </div>
-
                   <div>
                     <p className="font-pixel text-[10px] text-[#173b29] sm:text-xs">
                       PENGALAMAN ORGANISASI
                     </p>
-
                     <p className="font-mono text-[7px] text-[#587566]">
                       KEPEMIMPINAN & KERJA SAMA TIM
                     </p>
@@ -1281,9 +997,7 @@ export default function LifeStory() {
                       >
                         <div
                           className="flex h-9 w-9 shrink-0 items-center justify-center border-2 border-[#173b29]"
-                          style={{
-                            backgroundColor: item.hex,
-                          }}
+                          style={{ backgroundColor: item.hex }}
                         >
                           <Icon size={16} className="text-[#173b29]" />
                         </div>
@@ -1293,7 +1007,6 @@ export default function LifeStory() {
                             <span className="font-mono text-[7px] text-[#779083]">
                               0{index + 1}
                             </span>
-
                             <p className="font-pixel text-[9px] leading-relaxed text-[#173b29] sm:text-[10px]">
                               {item.title}
                             </p>
@@ -1310,29 +1023,19 @@ export default function LifeStory() {
               </div>
             </div>
 
-            {/* =================================================
-                HUD
-            ================================================== */}
-
-            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 font-mono text-[7px] tracking-wider text-[#385b48] sm:text-[8px]">
+            {/* HUD */}
+            {/* <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 font-mono text-[7px] tracking-wider text-[#385b48] sm:text-[8px]">
               <span>WORLD_STATE: CONTINUOUS</span>
-
               <span>•</span>
-
               <span>TREE_SYSTEM: CONNECTED</span>
-
               <span>•</span>
-
               <span>NEXT_ZONE: LOADING...</span>
-            </div>
+            </div> */}
           </div>
         </div>
       </motion.div>
 
-      {/* =====================================================
-          MODALS
-      ====================================================== */}
-
+      {/* MODALS */}
       {showEduCourse && (
         <EduCourseModal
           certificates={itCertificates}
