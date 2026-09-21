@@ -10,6 +10,7 @@ import {
   Sprout,
   Gem,
   Star,
+  ChessKnight,
 } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 
@@ -28,7 +29,7 @@ const projects = [
   },
   {
     id: "tugasku",
-    title: "APLIKASI TO DO LIST",
+    title: "APLIKASI TO-DO LIST",
     tech: "React • Tailwind • PHP • MySQL",
     desc: "Aplikasi untuk mencatat, mengatur, dan memantau berbagai tugas.",
     Icon: Layout,
@@ -37,6 +38,18 @@ const projects = [
     image: "/view/view-tugasku.png",
     githubUrl: "https://github.com/airlanggapangestu/TugasKu",
     demoUrl: "#",
+  },
+  {
+    id: "chess",
+    title: "APLIKASI CATUR",
+    tech: "React • Tailwind • Stockfish",
+    desc: "Aplikasi catur modern dengan engine analysis, tactical puzzle, dan local multiplayer.",
+    Icon: ChessKnight,
+    hex: "#A78BFA",
+    tags: ["Full Stack", "UI/UX"],
+    image: "/view/view-catur.png",
+    githubUrl: "https://github.com/airlanggapangestu/Chess-Mate",
+    demoUrl: "https://chess-mate-taupe.vercel.app/",
   },
 ];
 
@@ -1023,10 +1036,10 @@ export default function TechHarvest() {
             mx-auto
             grid
             w-full
-            max-w-4xl
+            max-w-5xl
             grid-cols-1
             gap-6
-            md:grid-cols-2
+            md:grid-cols-3
           "
         >
           {projects.map((project, index) => (

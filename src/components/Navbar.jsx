@@ -95,27 +95,46 @@ export default function Navbar() {
           }}
           className={`
             relative
+            overflow-hidden
             border
             ${
               scrolled
-                ? "border-white/20 bg-[#10191a]/75 shadow-[0_8px_30px_rgba(0,0,0,0.18)]"
-                : "border-white/25 bg-[#172426]/45 shadow-[0_6px_25px_rgba(0,0,0,0.12)]"
+                ? `
+                  border-[#6f604d]/35
+                  bg-[#f4ecd9]/88
+                  shadow-[0_8px_25px_rgba(58,45,29,0.18)]
+                `
+                : `
+                  border-[#7c6b55]/30
+                  bg-[#f8f1df]/72
+                  shadow-[0_6px_20px_rgba(58,45,29,0.12)]
+                `
             }
             backdrop-blur-md
-            transition-all duration-500
+            transition-all
+            duration-500
           `}
+          style={{
+            clipPath:
+              "polygon(0 5px, 5px 5px, 5px 0, calc(100% - 5px) 0, calc(100% - 5px) 5px, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 5px calc(100% - 5px), 0 calc(100% - 5px))",
+          }}
         >
           {/* =================================================
               PIXEL CORNERS
           ================================================== */}
 
-          <span className="absolute -left-px -top-px h-2 w-2 bg-white/60" />
-          <span className="absolute -right-px -top-px h-2 w-2 bg-white/60" />
-          <span className="absolute -bottom-px -left-px h-2 w-2 bg-white/30" />
-          <span className="absolute -bottom-px -right-px h-2 w-2 bg-white/30" />
+          <span className="absolute left-0 top-0 h-2 w-2 bg-[#806f56]" />
+          <span className="absolute right-0 top-0 h-2 w-2 bg-[#806f56]" />
 
-          {/* subtle top light */}
-          <div className="absolute inset-x-0 top-0 h-px bg-white/25" />
+          <span className="absolute bottom-0 left-0 h-2 w-2 bg-[#9c896d]/60" />
+          <span className="absolute bottom-0 right-0 h-2 w-2 bg-[#9c896d]/60" />
+
+          {/* Top highlight */}
+          <div className="absolute inset-x-2 top-0 h-px bg-white/80" />
+
+          {/* =================================================
+              CONTENT
+          ================================================== */}
 
           <div className="flex h-[58px] items-center justify-between px-3 sm:h-[62px] sm:px-5 lg:px-6">
             {/* =================================================
@@ -127,7 +146,7 @@ export default function Navbar() {
               onClick={closeMenu}
               className="group flex items-center gap-3"
             >
-              {/* Logo box */}
+              {/* Pixel Logo */}
               <motion.div
                 whileHover={{
                   y: -2,
@@ -140,19 +159,27 @@ export default function Navbar() {
                 }}
                 className="
                   relative
-                  flex h-9 w-9
-                  items-center justify-center
+                  flex
+                  h-9
+                  w-9
+                  items-center
+                  justify-center
                   border
-                  border-white/25
-                  bg-black/25
-                  text-white
-                  shadow-[3px_3px_0_rgba(0,0,0,0.25)]
-                  sm:h-10 sm:w-10
+                  border-[#806f56]/50
+                  bg-[#e3d3b6]
+                  text-[#344b37]
+                  shadow-[3px_3px_0_#8a765b]
+                  sm:h-10
+                  sm:w-10
                 "
+                style={{
+                  clipPath:
+                    "polygon(0 3px, 3px 3px, 3px 0, calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px))",
+                }}
               >
-                <Terminal size={17} strokeWidth={2} />
+                <Terminal size={17} strokeWidth={2.2} />
 
-                {/* status pixel */}
+                {/* Status pixel */}
                 <motion.span
                   animate={{
                     opacity: [0.35, 1, 0.35],
@@ -168,20 +195,21 @@ export default function Navbar() {
                     h-2.5
                     w-2.5
                     border
-                    border-white/30
-                    bg-[#8bcf70]
+                    border-[#f5eddb]
+                    bg-[#79a95b]
+                    shadow-[0_0_5px_rgba(121,169,91,0.5)]
                   "
                 />
               </motion.div>
 
-              {/* Name */}
+              {/* Brand */}
               <div className="hidden sm:block">
-                <div className="font-pixel text-[10px] tracking-[0.16em] text-white drop-shadow-[2px_2px_0_rgba(0,0,0,0.35)]">
+                <div className="font-pixel text-[10px] tracking-[0.16em] text-[#314735]">
                   RANGGA
-                  <span className="text-[#9bd47e]">.DEV</span>
+                  <span className="text-[#668f4f]">.DEV</span>
                 </div>
 
-                <div className="mt-1 font-mono text-[6px] tracking-[0.18em] text-white/50">
+                <div className="mt-1 font-mono text-[6px] tracking-[0.18em] text-[#6d6658]">
                   DIGITAL JOURNEY
                 </div>
               </div>
@@ -203,7 +231,7 @@ export default function Navbar() {
                       href={link.href}
                       className="group relative flex items-center gap-2 px-3 py-2.5"
                     >
-                      {/* active block */}
+                      {/* Active background */}
                       <motion.span
                         initial={false}
                         animate={{
@@ -213,12 +241,16 @@ export default function Navbar() {
                           absolute
                           inset-0
                           border
-                          border-white/15
-                          bg-white/10
+                          border-[#7b9365]/35
+                          bg-[#91b875]/16
                         "
+                        style={{
+                          clipPath:
+                            "polygon(0 3px, 3px 3px, 3px 0, calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px))",
+                        }}
                       />
 
-                      {/* active pixel */}
+                      {/* Active pixel */}
                       <motion.span
                         initial={false}
                         animate={{
@@ -229,9 +261,9 @@ export default function Navbar() {
                           absolute
                           left-0
                           top-1/2
-                          w-[2px]
+                          w-[3px]
                           -translate-y-1/2
-                          bg-[#a5d987]
+                          bg-[#719b55]
                         "
                       />
 
@@ -242,8 +274,8 @@ export default function Navbar() {
                           transition-all duration-300
                           ${
                             active
-                              ? "text-[#b8df96]"
-                              : "text-white/50 group-hover:text-white/85"
+                              ? "text-[#4d733e]"
+                              : "text-[#817968] group-hover:text-[#4d733e]"
                           }
                         `}
                       />
@@ -251,13 +283,14 @@ export default function Navbar() {
                       <span
                         className={`
                           relative z-10
-                          font-pixel text-[8px]
+                          font-pixel
+                          text-[8px]
                           tracking-wider
                           transition-colors
                           ${
                             active
-                              ? "text-white"
-                              : "text-white/60 group-hover:text-white"
+                              ? "text-[#314735]"
+                              : "text-[#655f54] group-hover:text-[#314735]"
                           }
                         `}
                       >
@@ -267,8 +300,9 @@ export default function Navbar() {
                       <span
                         className={`
                           relative z-10
-                          font-mono text-[6px]
-                          ${active ? "text-[#9bd47e]" : "text-white/30"}
+                          font-mono
+                          text-[6px]
+                          ${active ? "text-[#709653]" : "text-[#a09888]"}
                         `}
                       >
                         {link.code}
@@ -279,7 +313,7 @@ export default function Navbar() {
               </div>
 
               {/* =================================================
-                  CAMPFIRE BUTTON
+                  CAMPFIRE / CONTACT
               ================================================== */}
 
               <a
@@ -291,20 +325,23 @@ export default function Navbar() {
                   items-center
                   gap-2
                   border
-                  border-white/20
-                  bg-white/10
+                  border-[#9b7650]/40
+                  bg-[#d8c09b]/35
                   px-3
                   py-2
-                  shadow-[3px_3px_0_rgba(0,0,0,0.25)]
-                  backdrop-blur-sm
+                  shadow-[3px_3px_0_rgba(92,70,45,0.18)]
                   transition-all
                   duration-200
                   hover:-translate-y-[1px]
-                  hover:border-[#f4b35d]/50
-                  hover:bg-[#f4b35d]/15
+                  hover:border-[#c18a4d]/65
+                  hover:bg-[#e0bd82]/45
                   active:translate-y-[2px]
                   active:shadow-none
                 "
+                style={{
+                  clipPath:
+                    "polygon(0 3px, 3px 3px, 3px 0, calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px))",
+                }}
               >
                 <motion.span
                   animate={{
@@ -316,16 +353,20 @@ export default function Navbar() {
                     repeat: Infinity,
                   }}
                 >
-                  <Flame size={13} className="text-[#ffc36b]" />
+                  <Flame size={13} className="text-[#c87832]" />
                 </motion.span>
 
-                <span className="font-pixel text-[8px] text-white/80">
+                <span className="font-pixel text-[8px] text-[#5b4835]">
                   HUBUNGI SAYA
                 </span>
 
                 <ChevronRight
                   size={10}
-                  className="text-white/40 transition-transform group-hover:translate-x-1"
+                  className="
+                    text-[#8c765c]
+                    transition-transform
+                    group-hover:translate-x-1
+                  "
                 />
               </a>
             </div>
@@ -338,14 +379,18 @@ export default function Navbar() {
               onClick={() => setIsOpen((prev) => !prev)}
               aria-label={isOpen ? "Tutup menu" : "Buka menu"}
               className="
-                flex h-9 w-9
-                items-center justify-center
-                border border-white/25
-                bg-black/20
-                text-white
-                shadow-[3px_3px_0_rgba(0,0,0,0.25)]
+                flex
+                h-9
+                w-9
+                items-center
+                justify-center
+                border
+                border-[#806f56]/40
+                bg-[#e4d6bd]/70
+                text-[#40563f]
+                shadow-[3px_3px_0_rgba(91,70,46,0.18)]
                 transition-all
-                hover:bg-white/10
+                hover:bg-[#d8c9ad]
                 active:translate-y-[2px]
                 active:shadow-none
                 md:hidden
@@ -422,25 +467,43 @@ export default function Navbar() {
                   duration: 0.3,
                   ease: "easeOut",
                 }}
-                className="overflow-hidden border-t border-white/15 md:hidden"
+                className="
+                  overflow-hidden
+                  border-t
+                  border-[#806f56]/25
+                  md:hidden
+                "
               >
-                <div className="bg-[#101719]/90 p-3 backdrop-blur-xl">
-                  {/* menu header */}
-                  <div className="mb-3 flex items-center justify-between border-b border-white/10 px-2 pb-3">
+                <div className="bg-[#eee3cc]/95 p-3 backdrop-blur-xl">
+                  {/* Menu Header */}
+                  <div className="mb-3 flex items-center justify-between border-b border-[#806f56]/20 px-2 pb-3">
                     <div className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 bg-[#9bd47e]" />
+                      <motion.span
+                        animate={{
+                          opacity: [0.4, 1, 0.4],
+                        }}
+                        transition={{
+                          duration: 1.8,
+                          repeat: Infinity,
+                        }}
+                        className="
+                          h-1.5
+                          w-1.5
+                          bg-[#719b55]
+                        "
+                      />
 
-                      <span className="font-mono text-[7px] tracking-[0.18em] text-white/45">
+                      <span className="font-mono text-[7px] tracking-[0.18em] text-[#746c5d]">
                         EXPLORER MENU
                       </span>
                     </div>
 
-                    <span className="font-mono text-[6px] text-white/30">
+                    <span className="font-mono text-[6px] text-[#9a9180]">
                       RANGGA.DEV
                     </span>
                   </div>
 
-                  {/* links */}
+                  {/* Links */}
                   <div className="space-y-2">
                     {NAV_LINKS.map((link, index) => {
                       const Icon = link.icon;
@@ -474,10 +537,21 @@ export default function Navbar() {
                             transition-all
                             ${
                               active
-                                ? "border-white/20 bg-white/10"
-                                : "border-white/10 bg-black/15 hover:bg-white/5"
+                                ? `
+                                  border-[#78925f]/40
+                                  bg-[#91b875]/15
+                                `
+                                : `
+                                  border-[#806f56]/20
+                                  bg-[#fffaf0]/35
+                                  hover:bg-[#dce8d0]/40
+                                `
                             }
                           `}
+                          style={{
+                            clipPath:
+                              "polygon(0 3px, 3px 3px, 3px 0, calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px))",
+                          }}
                         >
                           <div className="flex items-center gap-3">
                             <div
@@ -490,15 +564,15 @@ export default function Navbar() {
                                 border
                                 ${
                                   active
-                                    ? "border-[#a5d987]/40 bg-[#9bd47e]/10"
-                                    : "border-white/10 bg-black/15"
+                                    ? "border-[#78925f]/40 bg-[#91b875]/20"
+                                    : "border-[#806f56]/20 bg-[#d8ccb5]/30"
                                 }
                               `}
                             >
                               <Icon
                                 size={13}
                                 className={
-                                  active ? "text-[#a5d987]" : "text-white/45"
+                                  active ? "text-[#4f773e]" : "text-[#817766]"
                                 }
                               />
                             </div>
@@ -506,14 +580,17 @@ export default function Navbar() {
                             <div>
                               <div
                                 className={`
-                                  font-pixel text-[9px]
-                                  ${active ? "text-white" : "text-white/60"}
+                                  font-pixel
+                                  text-[9px]
+                                  ${
+                                    active ? "text-[#314735]" : "text-[#665f53]"
+                                  }
                                 `}
                               >
                                 {link.name}
                               </div>
 
-                              <div className="mt-1 font-mono text-[6px] tracking-wider text-white/25">
+                              <div className="mt-1 font-mono text-[6px] tracking-wider text-[#9a9180]">
                                 AREA_{link.code}
                               </div>
                             </div>
@@ -524,14 +601,17 @@ export default function Navbar() {
                             className={`
                               transition-all
                               group-hover:translate-x-1
-                              ${active ? "text-[#a5d987]" : "text-white/25"}
+                              ${active ? "text-[#63894e]" : "text-[#a39a88]"}
                             `}
                           />
                         </motion.a>
                       );
                     })}
 
-                    {/* campfire */}
+                    {/* =================================================
+                        CAMPFIRE
+                    ================================================== */}
+
                     <motion.a
                       href="#campfire"
                       onClick={closeMenu}
@@ -553,33 +633,37 @@ export default function Navbar() {
                         justify-center
                         gap-2
                         border
-                        border-[#f4b35d]/30
-                        bg-[#f4b35d]/10
+                        border-[#c28b4f]/40
+                        bg-[#e4c48e]/35
                         px-4
                         py-3
-                        shadow-[3px_3px_0_rgba(0,0,0,0.25)]
+                        shadow-[3px_3px_0_rgba(92,70,45,0.16)]
                         transition-all
-                        hover:bg-[#f4b35d]/15
+                        hover:bg-[#e6c58e]/50
                         active:translate-y-[2px]
                         active:shadow-none
                       "
+                      style={{
+                        clipPath:
+                          "polygon(0 3px, 3px 3px, 3px 0, calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px))",
+                      }}
                     >
-                      <Flame size={14} className="text-[#ffc36b]" />
+                      <Flame size={14} className="text-[#c66e2c]" />
 
-                      <span className="font-pixel text-[9px] text-[#ffd28d]">
+                      <span className="font-pixel text-[9px] text-[#664c34]">
                         CAMPFIRE
                       </span>
                     </motion.a>
                   </div>
 
-                  {/* footer */}
-                  <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-3">
-                    <span className="font-mono text-[6px] tracking-wider text-white/25">
+                  {/* Footer */}
+                  <div className="mt-3 flex items-center justify-between border-t border-[#806f56]/20 pt-3">
+                    <span className="font-mono text-[6px] tracking-wider text-[#9a9180]">
                       WORLD_NAVIGATION
                     </span>
 
-                    <span className="flex items-center gap-1 font-mono text-[6px] text-[#8fbd73]/60">
-                      <span className="h-1.5 w-1.5 bg-[#8fbd73]" />
+                    <span className="flex items-center gap-1 font-mono text-[6px] text-[#709653]">
+                      <span className="h-1.5 w-1.5 bg-[#709653]" />
                       ONLINE
                     </span>
                   </div>
@@ -607,7 +691,14 @@ export default function Navbar() {
               opacity: 0,
             }}
             onClick={closeMenu}
-            className="fixed inset-0 z-[90] bg-black/35 backdrop-blur-[2px] md:hidden"
+            className="
+              fixed
+              inset-0
+              z-[90]
+              bg-[#3f493b]/15
+              backdrop-blur-[2px]
+              md:hidden
+            "
           />
         )}
       </AnimatePresence>
