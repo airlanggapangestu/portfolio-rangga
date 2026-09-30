@@ -222,7 +222,7 @@ const organizationGroups = [
         role: "Divisi PDD",
         description:
           "Mendokumentasikan seluruh rangkaian kegiatan, mengembangkan ide dan membuat konten, merancang berbagai kebutuhan desain, serta mengunggah dan menyajikan konten di media sosial secara menarik.",
-        images: ["/docs/pdd-1.jpg", "/docs/pdd-3.JPEG", "/docs/pdd-2.jpg"],
+        images: ["/docs/pdd-1.jpg", "/docs/pdd-3.jpg", "/docs/pdd-2.JPEG"],
       },
     ],
   },
