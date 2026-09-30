@@ -1133,7 +1133,7 @@ export default function HeroSection() {
                   tracking-[0.2em]
                 "
               >
-                HELLO, I'M
+                HALO, SAYA
               </motion.p>
 
               {/* =================================================
@@ -1230,7 +1230,7 @@ export default function HeroSection() {
                     text-sky-950
                   "
                 >
-                  FULL STACK DEVELOPER
+                  SOFTWARE DEVELOPER
                 </span>
 
                 <span
@@ -1365,7 +1365,7 @@ export default function HeroSection() {
                 {/* About */}
 
                 <a
-                  href="#about"
+                  href="#hero"
                   className="
                     inline-flex
                     items-center
@@ -1427,9 +1427,7 @@ export default function HeroSection() {
                     text-sky-950/45
                     tracking-wide
                   "
-                >
-                  REACT • TAILWIND CSS
-                </span>
+                ></span>
               </motion.div>
             </div>
 

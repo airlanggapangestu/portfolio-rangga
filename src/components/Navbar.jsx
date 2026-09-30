@@ -19,13 +19,13 @@ const NAV_LINKS = [
     icon: TreePine,
   },
   {
-    name: "PENGALAMAN",
+    name: "NON IT",
     href: "#experience",
     code: "02",
     icon: Layers3,
   },
   {
-    name: "PROYEK",
+    name: "PORTFOLIO",
     href: "#projects",
     code: "03",
     icon: FolderGit2,
@@ -89,6 +89,10 @@ export default function Navbar() {
       ====================================================== */}
 
       <nav className="fixed left-1/2 top-3 z-[100] w-[calc(100%-20px)] -translate-x-1/2 sm:top-4 sm:w-[calc(100%-32px)] lg:w-[calc(100%-64px)] lg:max-w-7xl">
+        {/* =================================================
+            MAIN BAR
+        ================================================== */}
+
         <motion.div
           animate={{
             y: scrolled ? -1 : 0,
@@ -119,10 +123,7 @@ export default function Navbar() {
               "polygon(0 5px, 5px 5px, 5px 0, calc(100% - 5px) 0, calc(100% - 5px) 5px, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 5px calc(100% - 5px), 0 calc(100% - 5px))",
           }}
         >
-          {/* =================================================
-              PIXEL CORNERS
-          ================================================== */}
-
+          {/* PIXEL CORNERS */}
           <span className="absolute left-0 top-0 h-2 w-2 bg-[#806f56]" />
           <span className="absolute right-0 top-0 h-2 w-2 bg-[#806f56]" />
 
@@ -132,19 +133,16 @@ export default function Navbar() {
           {/* Top highlight */}
           <div className="absolute inset-x-2 top-0 h-px bg-white/80" />
 
-          {/* =================================================
-              CONTENT
-          ================================================== */}
-
+          {/* CONTENT */}
           <div className="flex h-[58px] items-center justify-between px-3 sm:h-[62px] sm:px-5 lg:px-6">
             {/* =================================================
-                LOGO
+                LOGO + BRAND (selalu visible, semua ukuran)
             ================================================== */}
 
             <a
               href="#hero"
               onClick={closeMenu}
-              className="group flex items-center gap-3"
+              className="group flex items-center gap-2.5 sm:gap-3"
             >
               {/* Pixel Logo */}
               <motion.div
@@ -162,6 +160,7 @@ export default function Navbar() {
                   flex
                   h-9
                   w-9
+                  shrink-0
                   items-center
                   justify-center
                   border
@@ -202,14 +201,14 @@ export default function Navbar() {
                 />
               </motion.div>
 
-              {/* Brand */}
-              <div className="hidden sm:block">
-                <div className="font-pixel text-[10px] tracking-[0.16em] text-[#314735]">
-                  RANGGA
-                  <span className="text-[#668f4f]">.DEV</span>
+              {/* Brand — selalu tampil di semua ukuran */}
+              <div className="leading-tight">
+                <div className="font-pixel text-[9px] tracking-[0.14em] text-[#314735] sm:text-[10px] sm:tracking-[0.16em]">
+                  AIRLANGGA
+                  <span className="text-[#668f4f]">.</span>
                 </div>
 
-                <div className="mt-1 font-mono text-[6px] tracking-[0.18em] text-[#6d6658]">
+                <div className="mt-0.5 font-mono text-[5px] tracking-[0.16em] text-[#6d6658] sm:mt-1 sm:text-[6px] sm:tracking-[0.18em]">
                   DIGITAL JOURNEY
                 </div>
               </div>
@@ -312,10 +311,7 @@ export default function Navbar() {
                 })}
               </div>
 
-              {/* =================================================
-                  CAMPFIRE / CONTACT
-              ================================================== */}
-
+              {/* CONTACT BUTTON */}
               <a
                 href="#campfire"
                 className="
@@ -400,42 +396,18 @@ export default function Navbar() {
                 {isOpen ? (
                   <motion.div
                     key="close"
-                    initial={{
-                      opacity: 0,
-                      rotate: -90,
-                      scale: 0.7,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      rotate: 0,
-                      scale: 1,
-                    }}
-                    exit={{
-                      opacity: 0,
-                      rotate: 90,
-                      scale: 0.7,
-                    }}
+                    initial={{ opacity: 0, rotate: -90, scale: 0.7 }}
+                    animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                    exit={{ opacity: 0, rotate: 90, scale: 0.7 }}
                   >
                     <X size={17} />
                   </motion.div>
                 ) : (
                   <motion.div
                     key="menu"
-                    initial={{
-                      opacity: 0,
-                      rotate: 90,
-                      scale: 0.7,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      rotate: 0,
-                      scale: 1,
-                    }}
-                    exit={{
-                      opacity: 0,
-                      rotate: -90,
-                      scale: 0.7,
-                    }}
+                    initial={{ opacity: 0, rotate: 90, scale: 0.7 }}
+                    animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                    exit={{ opacity: 0, rotate: -90, scale: 0.7 }}
                   >
                     <Menu size={17} />
                   </motion.div>
@@ -443,235 +415,181 @@ export default function Navbar() {
               </AnimatePresence>
             </button>
           </div>
+        </motion.div>
 
-          {/* =================================================
-              MOBILE MENU
-          ================================================== */}
+        {/* =================================================
+            MOBILE MENU
+            Diletakkan DI LUAR motion.div yang punya
+            overflow-hidden + clip-path, agar link bisa di-klik.
+        ================================================== */}
 
-          <AnimatePresence>
-            {isOpen && (
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  height: 0,
-                }}
-                animate={{
-                  opacity: 1,
-                  height: "auto",
-                }}
-                exit={{
-                  opacity: 0,
-                  height: 0,
-                }}
-                transition={{
-                  duration: 0.3,
-                  ease: "easeOut",
-                }}
-                className="
-                  overflow-hidden
-                  border-t
-                  border-[#806f56]/25
-                  md:hidden
-                "
-              >
-                <div className="bg-[#eee3cc]/95 p-3 backdrop-blur-xl">
-                  {/* Menu Header */}
-                  <div className="mb-3 flex items-center justify-between border-b border-[#806f56]/20 px-2 pb-3">
-                    <div className="flex items-center gap-2">
-                      <motion.span
-                        animate={{
-                          opacity: [0.4, 1, 0.4],
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, scaleY: 0.95 }}
+              animate={{ opacity: 1, y: 0, scaleY: 1 }}
+              exit={{ opacity: 0, y: -10, scaleY: 0.95 }}
+              transition={{
+                duration: 0.25,
+                ease: "easeOut",
+              }}
+              style={{
+                transformOrigin: "top center",
+                clipPath:
+                  "polygon(0 5px, 5px 5px, 5px 0, calc(100% - 5px) 0, calc(100% - 5px) 5px, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 5px calc(100% - 5px), 0 calc(100% - 5px))",
+              }}
+              className="
+                pointer-events-auto
+                relative
+                mt-2
+                border
+                border-[#6f604d]/35
+                bg-[#f4ecd9]/95
+                shadow-[0_8px_25px_rgba(58,45,29,0.18)]
+                backdrop-blur-xl
+                md:hidden
+              "
+            >
+              {/* Pixel corners for mobile menu */}
+              <span className="absolute left-0 top-0 h-2 w-2 bg-[#806f56]" />
+              <span className="absolute right-0 top-0 h-2 w-2 bg-[#806f56]" />
+              <span className="absolute bottom-0 left-0 h-2 w-2 bg-[#9c896d]/60" />
+              <span className="absolute bottom-0 right-0 h-2 w-2 bg-[#9c896d]/60" />
+
+              <div className="absolute inset-x-2 top-0 h-px bg-white/80" />
+
+              <div className="p-3">
+                {/* Links */}
+                <div className="space-y-2">
+                  {NAV_LINKS.map((link, index) => {
+                    const Icon = link.icon;
+                    const active = activeSection === link.name;
+
+                    return (
+                      <motion.a
+                        key={link.name}
+                        href={link.href}
+                        onClick={closeMenu}
+                        initial={{ opacity: 0, x: -12 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className={`
+                          group
+                          pointer-events-auto
+                          relative
+                          flex
+                          items-center
+                          justify-between
+                          border
+                          px-3
+                          py-3
+                          transition-all
+                          ${
+                            active
+                              ? `
+                                border-[#78925f]/40
+                                bg-[#91b875]/15
+                              `
+                              : `
+                                border-[#806f56]/20
+                                bg-[#fffaf0]/35
+                                hover:bg-[#dce8d0]/40
+                              `
+                          }
+                        `}
+                        style={{
+                          clipPath:
+                            "polygon(0 3px, 3px 3px, 3px 0, calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px))",
                         }}
-                        transition={{
-                          duration: 1.8,
-                          repeat: Infinity,
-                        }}
-                        className="
-                          h-1.5
-                          w-1.5
-                          bg-[#719b55]
-                        "
-                      />
-
-                      <span className="font-mono text-[7px] tracking-[0.18em] text-[#746c5d]">
-                        EXPLORER MENU
-                      </span>
-                    </div>
-
-                    <span className="font-mono text-[6px] text-[#9a9180]">
-                      RANGGA.DEV
-                    </span>
-                  </div>
-
-                  {/* Links */}
-                  <div className="space-y-2">
-                    {NAV_LINKS.map((link, index) => {
-                      const Icon = link.icon;
-                      const active = activeSection === link.name;
-
-                      return (
-                        <motion.a
-                          key={link.name}
-                          href={link.href}
-                          onClick={closeMenu}
-                          initial={{
-                            opacity: 0,
-                            x: -12,
-                          }}
-                          animate={{
-                            opacity: 1,
-                            x: 0,
-                          }}
-                          transition={{
-                            delay: index * 0.05,
-                          }}
-                          className={`
-                            group
-                            relative
-                            flex
-                            items-center
-                            justify-between
-                            border
-                            px-3
-                            py-3
-                            transition-all
-                            ${
-                              active
-                                ? `
-                                  border-[#78925f]/40
-                                  bg-[#91b875]/15
-                                `
-                                : `
-                                  border-[#806f56]/20
-                                  bg-[#fffaf0]/35
-                                  hover:bg-[#dce8d0]/40
-                                `
-                            }
-                          `}
-                          style={{
-                            clipPath:
-                              "polygon(0 3px, 3px 3px, 3px 0, calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px))",
-                          }}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div
-                              className={`
-                                flex
-                                h-7
-                                w-7
-                                items-center
-                                justify-center
-                                border
-                                ${
-                                  active
-                                    ? "border-[#78925f]/40 bg-[#91b875]/20"
-                                    : "border-[#806f56]/20 bg-[#d8ccb5]/30"
-                                }
-                              `}
-                            >
-                              <Icon
-                                size={13}
-                                className={
-                                  active ? "text-[#4f773e]" : "text-[#817766]"
-                                }
-                              />
-                            </div>
-
-                            <div>
-                              <div
-                                className={`
-                                  font-pixel
-                                  text-[9px]
-                                  ${
-                                    active ? "text-[#314735]" : "text-[#665f53]"
-                                  }
-                                `}
-                              >
-                                {link.name}
-                              </div>
-
-                              <div className="mt-1 font-mono text-[6px] tracking-wider text-[#9a9180]">
-                                AREA_{link.code}
-                              </div>
-                            </div>
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`
+                              flex
+                              h-7
+                              w-7
+                              items-center
+                              justify-center
+                              border
+                              ${
+                                active
+                                  ? "border-[#78925f]/40 bg-[#91b875]/20"
+                                  : "border-[#806f56]/20 bg-[#d8ccb5]/30"
+                              }
+                            `}
+                          >
+                            <Icon
+                              size={13}
+                              className={
+                                active ? "text-[#4f773e]" : "text-[#817766]"
+                              }
+                            />
                           </div>
 
-                          <ChevronRight
-                            size={13}
+                          <div
                             className={`
-                              transition-all
-                              group-hover:translate-x-1
-                              ${active ? "text-[#63894e]" : "text-[#a39a88]"}
+                              font-pixel
+                              text-[9px]
+                              ${active ? "text-[#314735]" : "text-[#665f53]"}
                             `}
-                          />
-                        </motion.a>
-                      );
-                    })}
+                          >
+                            {link.name}
+                          </div>
+                        </div>
 
-                    {/* =================================================
-                        CAMPFIRE
-                    ================================================== */}
+                        <ChevronRight
+                          size={13}
+                          className={`
+                            transition-all
+                            group-hover:translate-x-1
+                            ${active ? "text-[#63894e]" : "text-[#a39a88]"}
+                          `}
+                        />
+                      </motion.a>
+                    );
+                  })}
 
-                    <motion.a
-                      href="#campfire"
-                      onClick={closeMenu}
-                      initial={{
-                        opacity: 0,
-                        y: 8,
-                      }}
-                      animate={{
-                        opacity: 1,
-                        y: 0,
-                      }}
-                      transition={{
-                        delay: 0.2,
-                      }}
-                      className="
-                        mt-3
-                        flex
-                        items-center
-                        justify-center
-                        gap-2
-                        border
-                        border-[#c28b4f]/40
-                        bg-[#e4c48e]/35
-                        px-4
-                        py-3
-                        shadow-[3px_3px_0_rgba(92,70,45,0.16)]
-                        transition-all
-                        hover:bg-[#e6c58e]/50
-                        active:translate-y-[2px]
-                        active:shadow-none
-                      "
-                      style={{
-                        clipPath:
-                          "polygon(0 3px, 3px 3px, 3px 0, calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px))",
-                      }}
-                    >
-                      <Flame size={14} className="text-[#c66e2c]" />
+                  {/* HUBUNGI SAYA */}
+                  <motion.a
+                    href="#campfire"
+                    onClick={closeMenu}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="
+                      pointer-events-auto
+                      mt-3
+                      flex
+                      items-center
+                      justify-center
+                      gap-2
+                      border
+                      border-[#c28b4f]/40
+                      bg-[#e4c48e]/35
+                      px-4
+                      py-3
+                      shadow-[3px_3px_0_rgba(92,70,45,0.16)]
+                      transition-all
+                      hover:bg-[#e6c58e]/50
+                      active:translate-y-[2px]
+                      active:shadow-none
+                    "
+                    style={{
+                      clipPath:
+                        "polygon(0 3px, 3px 3px, 3px 0, calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px))",
+                    }}
+                  >
+                    <Flame size={14} className="text-[#c66e2c]" />
 
-                      <span className="font-pixel text-[9px] text-[#664c34]">
-                        CAMPFIRE
-                      </span>
-                    </motion.a>
-                  </div>
-
-                  {/* Footer */}
-                  <div className="mt-3 flex items-center justify-between border-t border-[#806f56]/20 pt-3">
-                    <span className="font-mono text-[6px] tracking-wider text-[#9a9180]">
-                      WORLD_NAVIGATION
+                    <span className="font-pixel text-[9px] text-[#664c34]">
+                      HUBUNGI SAYA
                     </span>
-
-                    <span className="flex items-center gap-1 font-mono text-[6px] text-[#709653]">
-                      <span className="h-1.5 w-1.5 bg-[#709653]" />
-                      ONLINE
-                    </span>
-                  </div>
+                  </motion.a>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {/* =====================================================
@@ -681,15 +599,9 @@ export default function Navbar() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{
-              opacity: 0,
-            }}
-            animate={{
-              opacity: 1,
-            }}
-            exit={{
-              opacity: 0,
-            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={closeMenu}
             className="
               fixed

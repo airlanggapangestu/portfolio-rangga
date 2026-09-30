@@ -76,11 +76,11 @@ export default function MusicPlayer() {
                 ${isPlaying ? "text-emerald-300" : "text-white/40"}
               `}
             >
-              {isPlaying ? "AUDIO ACTIVE" : "AUDIO OFF"}
+              {isPlaying ? "MUSIK NYALA" : "MUSIK MATI"}
             </span>
 
             <span className="mt-1 text-[7px] font-mono tracking-wider text-white/25">
-              BGM // WORLD
+              NIKMATI KETENANGAN
             </span>
           </div>
 
